@@ -1,5 +1,5 @@
 {
- - "name": "@mechmate/sdk",
+  "name": "@mechmate/sdk",
   "version": "0.1.0",
   "description": "Shared schema validation library for MechMate applications",
   "main": "dist/index.js",
@@ -21,7 +21,6 @@
   "license": "UNLICENSED",
   "dependencies": {
         "zod": "^3.23.8"
-
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
