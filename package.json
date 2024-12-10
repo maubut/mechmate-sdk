@@ -1,0 +1,26 @@
+{
+  "name": "@mechmate/schemas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "type": "diest/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "dev": "concurrently \"pnpm run build:watch\" \"nodemon -w dist -x 'yalc push'\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "concurrently": "^9.1.0",
+    "nodemon": "^3.1.7",
+    "typescript": "^5.7.2",
+    "zod": "^3.23.8"
+  }
+}
