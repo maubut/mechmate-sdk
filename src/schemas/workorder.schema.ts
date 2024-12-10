@@ -23,4 +23,7 @@ export const CreateWorkorderSchema = z.object({
   }),
 });
 
+export const UpdateWorkorderSchema = CreateWorkorderSchema.partial();
+
 export type CreateWorkorderRequest = z.infer<typeof CreateWorkorderSchema>;
+export type UpdateWorkorderRequest = z.infer<typeof UpdateWorkorderSchema>;
