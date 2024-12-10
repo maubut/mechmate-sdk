@@ -7,7 +7,7 @@
   "files": [
     "dist"
   ],
- "scripts": {
+  "scripts": {
     "build": "tsc",
     "build:watch": "tsc -w",
     "clean": "rimraf dist",
@@ -20,7 +20,8 @@
   "author": "Mikhael Aubut",
   "license": "UNLICENSED",
   "dependencies": {
-        "zod": "^3.23.8"
+    "rimraf": "^6.0.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
