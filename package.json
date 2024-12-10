@@ -1,22 +1,24 @@
 {
-  "name": "@mechmate/sdk",
-  "version": "1.0.0",
-  "description": "",
+ - "name": "@mechmate/sdk",
+  "version": "0.1.0",
+  "description": "Shared schema validation library for MechMate applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "pnpm run build",
+ "scripts": {
     "build": "tsc",
     "build:watch": "tsc -w",
-    "dev": "concurrently \"pnpm run build:watch\" \"nodemon -w dist -x 'yalc push'\""
+    "clean": "rimraf dist",
+    "dev": "concurrently \"npm run build:watch\" \"nodemon -w dist -x 'yalc push'\"",
+    "prepare": "npm run clean && npm run build",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Mikhael Aubut",
+  "license": "UNLICENSED",
   "dependencies": {
         "zod": "^3.23.8"
 
