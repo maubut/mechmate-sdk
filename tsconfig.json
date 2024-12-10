@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2015",        // or higher, like ES2019
-    "module": "CommonJS",
+    "module": "ES2015",
     "lib": ["ES2019"],  // Include modern JS features
     "declaration": true,       // Generate .d.ts files
     "outDir": "./dist",
