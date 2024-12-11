@@ -5,7 +5,7 @@ export const CreateWorkorderSchema = z.object({
   customer: z.object({
     email: z.string().email().optional(),
     fullname: z.string().optional(),
-    mobile: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number"),
+    mobile: z.string().regex(/^\+?[1-9][\d\s-]{1,14}$/, "Invalid phone number"),
     uuid: z.string().uuid().optional(),
   }),
   technician: z.object({ uuid: z.string().uuid() }).optional(),
