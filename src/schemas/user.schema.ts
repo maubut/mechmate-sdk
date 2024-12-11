@@ -8,17 +8,17 @@ export const CreateUserSchema = z.object({
     mobile: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number"),
     uuid: z.string().uuid().optional(),
   }),
-  technician: z.object({ uuid: z.string().uuid() }).optional(),
-  mech: z.object({
-    uuid: z.string().uuid().optional(),
-    modelYear: z.number(),
-    model: z.object({
-      name: z.string(),
-      id: z.number(),
-      make: z.object({
-        id: z.number(),
-        name: z.string(),
-      }),
-    }),
-  }),
 });
+
+const usernameRegex = /^[a-zA-Z0-9]+([_. -]?[a-zA-Z0-9])*$/;
+export const SignInUserSchema = z.object({
+  username: z
+    .string()
+    .min(1, "Username is required")
+    .regex(usernameRegex, "Invalid username"),
+  password: z.string(),
+});
+
+export type SignInUserRequest = z.infer<typeof SignInUserSchema>;
+
+export const SignInResponseSchema = z.object({});

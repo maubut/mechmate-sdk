@@ -1,15 +1,11 @@
 import { z } from "zod";
 
-// Phone regex that accepts common North American formats
-const phoneRegex =
-  /^(\+?1[-\s]?)?\(?([0-9]{3})\)?[-\s]?([0-9]{3})[-\s]?([0-9]{4})$/;
-
 export const CreateWorkorderSchema = z.object({
   statusId: z.number(),
   customer: z.object({
     email: z.string().email().optional(),
     fullname: z.string().optional(),
-    mobile: z.string().regex(phoneRegex, "Invalid phone number"),
+    mobile: z.string().regex(/^\+?[1-9][\d\s-]{1,14}$/, "Invalid phone number"),
     uuid: z.string().uuid().optional(),
   }),
   technician: z.object({ uuid: z.string().uuid() }).optional(),

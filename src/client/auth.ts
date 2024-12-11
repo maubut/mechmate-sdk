@@ -1,18 +1,8 @@
-import { BaseClient } from "./base";
-
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  user: any;
-  accessToken: string;
-  refreshToken: string;
-}
+import { LoginResponse, LoginRequest } from "../schemas/login.schema";
+import { BaseClient, SDKResponse } from "./base";
 
 export class AuthClient extends BaseClient {
-  async login(data: LoginRequest) {
-    return this.fetch<LoginResponse>("/auth", "POST", data);
+  async login(data: LoginRequest): Promise<SDKResponse<LoginResponse>> {
+    return this.fetch<SDKResponse<LoginResponse>>("/auth", "POST", data);
   }
 }

@@ -3,13 +3,15 @@ import {
   CreateWorkorderRequest,
   WorkorderResponse,
 } from "../schemas/workorder.schema";
-import { BaseClient } from "./base";
+import { BaseClient, SDKResponse } from "./base";
 
 export class WorkorderClient extends BaseClient {
-  async getAll(filters: WorksheetFilter[] = []) {
+  async getAll(
+    filters: WorksheetFilter[] = [],
+  ): Promise<SDKResponse<WorkorderResponse[]>> {
     const queryParams = this.formatFilters(filters);
 
-    const response = await this.fetch<WorkorderResponse>(
+    const response = await this.fetch<SDKResponse<WorkorderResponse[]>>(
       `/worksheets${queryParams ? `?${queryParams}` : ""}`,
       "GET",
     );
@@ -17,8 +19,14 @@ export class WorkorderClient extends BaseClient {
     return response;
   }
 
-  async create(data: CreateWorkorderRequest): Promise<WorkorderResponse> {
-    return this.fetch<WorkorderResponse>("/worksheets", "POST", data);
+  async create(
+    data: CreateWorkorderRequest,
+  ): Promise<SDKResponse<WorkorderResponse>> {
+    return this.fetch<SDKResponse<WorkorderResponse>>(
+      "/worksheets",
+      "POST",
+      data,
+    );
   }
 
   private formatFilters(filters: WorksheetFilter[]): string {

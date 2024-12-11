@@ -8,6 +8,12 @@ interface RefreshTokenResponse {
   refreshToken: string;
 }
 
+export interface SDKResponse<T> {
+  data: T;
+  status: number;
+  headers?: Record<string, string>;
+}
+
 export interface SDKConfig {
   baseUrl: string;
   accessToken?: string;
