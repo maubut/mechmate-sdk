@@ -4,6 +4,7 @@ import { WorkorderClient } from "./client/workorder";
 
 // Entity schemas
 export * from "./schemas/workorder.schema";
+export * from "./utils/validation";
 
 // Grouped exports for covenience
 export * as workorderSchemas from "./schemas/workorder.schema";
