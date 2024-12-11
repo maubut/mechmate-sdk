@@ -1,5 +1,8 @@
+import { TokenManager, TokenStore } from "../auth/token-manager";
+
 export interface SDKConfig {
   baseUrl: string;
+  tokenStore: TokenStore;
   onError?: (error: any) => void;
   onUnauthorized?: () => Promise<boolean>; // Returns true if retry should happen
 }
@@ -10,7 +13,12 @@ export interface RequestOptions {
 }
 
 export class BaseClient {
-  constructor(private config: SDKConfig) {}
+  private tokenManager: TokenManager;
+  private refreshPromise: Promise<boolean> | null = null;
+
+  constructor(private config: SDKConfig) {
+    this.tokenManager = new TokenManager(config.tokenStore, config.baseUrl);
+  }
 
   protected async fetch<T>(
     path: string,
@@ -25,18 +33,26 @@ export class BaseClient {
       console.log(error);
 
       // @ts-ignore
-      if (error.code === "AUTH_TOKEN_EXPIRED" && this.config.onUnauthorized) {
-        // Try to refresh token
-        const shouldRetry = await this.config.onUnauthorized();
-        if (shouldRetry) {
-          // Retry original request
-          const retryResponse = await this.makeRequest(
-            path,
-            method,
-            body,
-            options,
+      if (error.code === "AUTH_TOKEN_EXPIRED") {
+        // If there's already a refresh in progress, wait for it
+        if (this.refreshPromise) {
+          await this.refreshPromise;
+          // Retry the original request after refresh
+          return this.makeRequest(path, method, body, options).then(
+            (response) => this.handleResponse(response),
           );
-          return this.handleResponse(retryResponse);
+        }
+
+        // Start a new refresh process
+        this.refreshPromise = this.tokenManager.refreshToken();
+        const refreshed = await this.refreshPromise;
+        this.refreshPromise = null;
+
+        if (refreshed) {
+          // Token refreshed successfully, retry the original request
+          return this.makeRequest(path, method, body, options).then(
+            (response) => this.handleResponse(response),
+          );
         }
       }
 
@@ -54,12 +70,15 @@ export class BaseClient {
     body?: unknown,
     options: RequestOptions = {},
   ) {
+    const accessToken = this.config.tokenStore.getAccessToken();
+
     const requestOptions: RequestInit = {
       method,
       headers: {
         "Content-Type": path.includes("print")
           ? "application/pdf"
           : "application/json",
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         ...options.headers,
       },
     };
