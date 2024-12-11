@@ -10,7 +10,7 @@ export class WorkorderClient extends BaseClient {
     const queryParams = this.formatFilters(filters);
 
     const response = await this.fetch<WorkorderResponse>(
-      `/worksheets?/${queryParams}`,
+      `/worksheets${queryParams ? `?${queryParams}` : ""}`,
       "GET",
     );
 

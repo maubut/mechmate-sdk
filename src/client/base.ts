@@ -1,10 +1,22 @@
-import { TokenManager, TokenStore } from "../auth/token-manager";
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
 export interface SDKConfig {
   baseUrl: string;
-  tokenStore: TokenStore;
+  accessToken?: string;
+  refreshToken?: string;
+
+  onTokensRefreshed?: (tokens: AuthTokens) => void;
+  onSessionExpired?: () => void;
+
   onError?: (error: any) => void;
-  onUnauthorized?: () => Promise<boolean>; // Returns true if retry should happen
 }
 
 export interface RequestOptions {
@@ -13,11 +25,19 @@ export interface RequestOptions {
 }
 
 export class BaseClient {
-  private tokenManager: TokenManager;
   private refreshPromise: Promise<boolean> | null = null;
 
-  constructor(private config: SDKConfig) {
-    this.tokenManager = new TokenManager(config.tokenStore, config.baseUrl);
+  protected accessToken?: string;
+  protected refreshToken?: string;
+
+  constructor(protected config: SDKConfig) {
+    this.accessToken = config.accessToken;
+    this.refreshToken = config.refreshToken;
+  }
+
+  public setTokens(tokens: AuthTokens) {
+    this.accessToken = tokens.accessToken;
+    this.refreshToken = tokens.refreshToken;
   }
 
   protected async fetch<T>(
@@ -32,27 +52,27 @@ export class BaseClient {
     } catch (error) {
       console.log(error);
 
-      // @ts-ignore
+      /// @ts-ignore
       if (error.code === "AUTH_TOKEN_EXPIRED") {
-        // If there's already a refresh in progress, wait for it
         if (this.refreshPromise) {
-          await this.refreshPromise;
-          // Retry the original request after refresh
-          return this.makeRequest(path, method, body, options).then(
-            (response) => this.handleResponse(response),
-          );
+          const refreshSuccessful = await this.refreshPromise;
+          if (refreshSuccessful) {
+            return this.makeRequest(path, method, body, options).then(
+              (response) => this.handleResponse(response),
+            );
+          }
         }
 
-        // Start a new refresh process
-        this.refreshPromise = this.tokenManager.refreshToken();
-        const refreshed = await this.refreshPromise;
+        this.refreshPromise = this.refreshTokens();
+        const refreshSuccessful = await this.refreshPromise;
         this.refreshPromise = null;
 
-        if (refreshed) {
-          // Token refreshed successfully, retry the original request
+        if (refreshSuccessful) {
           return this.makeRequest(path, method, body, options).then(
             (response) => this.handleResponse(response),
           );
+        } else {
+          this.config.onSessionExpired?.();
         }
       }
 
@@ -64,21 +84,61 @@ export class BaseClient {
     }
   }
 
+  private async refreshTokens(): Promise<boolean> {
+    if (!this.refreshToken) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(
+        `${this.config.baseUrl}/auth/refresh-token`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken: this.refreshToken }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to refresh token");
+      }
+
+      const data = (await response.json()) as RefreshTokenResponse;
+
+      if (data.accessToken && data.refreshToken) {
+        this.accessToken = data.accessToken;
+        this.refreshToken = data.refreshToken;
+
+        this.config.onTokensRefreshed?.({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        });
+
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      return false;
+    }
+  }
+
   private async makeRequest(
     path: string,
     method: string,
     body?: unknown,
     options: RequestOptions = {},
   ) {
-    const accessToken = this.config.tokenStore.getAccessToken();
-
     const requestOptions: RequestInit = {
       method,
       headers: {
         "Content-Type": path.includes("print")
           ? "application/pdf"
           : "application/json",
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+        ...(this.accessToken && {
+          Authorization: `Bearer ${this.accessToken}`,
+        }),
         ...options.headers,
       },
     };
