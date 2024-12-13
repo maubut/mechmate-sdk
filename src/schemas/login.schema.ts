@@ -1,12 +1,17 @@
 import { z } from "zod";
 import { SessionSchema } from "./session.schema";
 
-const usernameRegex = /^[a-zA-Z0-9]+([_. -]?[a-zA-Z0-9])*$/;
 export const LoginSchema = z.object({
   username: z
     .string()
     .min(1, "Username is required")
-    .regex(usernameRegex, "Invalid username"),
+    .transform((str) => str.toLowerCase())
+    .pipe(
+      z.union([
+        z.string().email(), // Allows email format
+        z.string().regex(/^[a-zA-Z0-9]+$/), // Allows simple username format
+      ]),
+    ),
   password: z.string(),
 });
 
