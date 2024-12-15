@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MechmateError } from "../errors";
 
 /**
  * Validates data against a Zod schema and throws if validation fails
@@ -7,7 +8,7 @@ import { z } from "zod";
  * @param schema - The Zod schema to validate against
  * @param data - The unknown data to validate
  * @returns The validated and typed data
- * @throws {z.ZodError} If validation fails
+ * @throws {MechmateError} If validation fails
  *
  * @example
  * try {
@@ -15,14 +16,21 @@ import { z } from "zod";
  *   // validData is now typed and validated
  *   await api.users.create(validData);
  * } catch (error) {
- *   if (error instanceof z.ZodError) {
+ *   if (error instanceof MechmateError) {
  *     // Handle validation errors
- *     showFormErrors(error.errors);
+ *     showFormErrors(error.details);
  *   }
  * }
  */
 export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
-  return schema.parse(data);
+  try {
+    return schema.parse(data);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw MechmateError.fromZodError(error);
+    }
+    throw error;
+  }
 }
 
 /**
@@ -33,7 +41,7 @@ export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
  * @param data - The unknown data to validate
  * @returns An object indicating success or failure
  *          success: true -> includes validated data
- *          success: false -> includes validation errors
+ *          success: false -> includes MechmateError with validation details
  *
  * @example
  * const result = validateRequestSafe(CreateUserSchema, formData);
@@ -41,19 +49,19 @@ export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
  *   // TypeScript knows result.data is valid here
  *   await api.users.create(result.data);
  * } else {
- *   // TypeScript knows result.errors exists here
- *   showFormErrors(result.errors);
+ *   // TypeScript knows result.error is MechmateError here
+ *   showFormErrors(result.error.details);
  * }
  */
 export function validateRequestSafe<T>(
   schema: z.ZodSchema<T>,
   data: unknown,
-): { success: true; data: T } | { success: false; errors: z.ZodError } {
+): { success: true; data: T } | { success: false; error: MechmateError } {
   try {
     return { success: true, data: schema.parse(data) };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, errors: error };
+      return { success: false, error: MechmateError.fromZodError(error) };
     }
     throw error;
   }

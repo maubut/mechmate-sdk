@@ -1,8 +1,10 @@
 import { WorksheetFilter } from "../schemas//filters";
 import {
   CreateWorkorderRequest,
+  CreateWorkorderSchema,
   WorkorderResponse,
 } from "../schemas/workorder.schema";
+import { validateRequest } from "../utils/validation";
 import { BaseClient, SDKResponse } from "./base";
 
 export class WorkorderClient extends BaseClient {
@@ -22,10 +24,11 @@ export class WorkorderClient extends BaseClient {
   async create(
     data: CreateWorkorderRequest,
   ): Promise<SDKResponse<WorkorderResponse>> {
+    const validatedData = validateRequest(CreateWorkorderSchema, data);
     return this.fetch<SDKResponse<WorkorderResponse>>(
       "/worksheets",
       "POST",
-      data,
+      validatedData,
     );
   }
 

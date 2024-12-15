@@ -1,11 +1,13 @@
 import { z } from "zod";
 
+const mobileRegex = /^(\+?[1-9]\d{0,3}[- ]?)?\d{3}[- ]?\d{3}[- ]?\d{4}$/;
+
 export const CreateUserSchema = z.object({
   statusId: z.number(),
   customer: z.object({
     email: z.string().email().optional(),
     fullname: z.string().optional(),
-    mobile: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number"),
+    mobile: z.string().regex(mobileRegex),
     uuid: z.string().uuid().optional(),
   }),
 });

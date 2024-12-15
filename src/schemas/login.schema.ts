@@ -4,7 +4,7 @@ import { SessionSchema } from "./session.schema";
 export const LoginSchema = z.object({
   username: z
     .string()
-    .min(1, "Username is required")
+    .min(1)
     .transform((str) => str.toLowerCase())
     .pipe(
       z.union([

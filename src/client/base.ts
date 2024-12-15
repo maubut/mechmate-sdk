@@ -1,3 +1,5 @@
+import { MechmateError } from "../errors";
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
@@ -59,7 +61,10 @@ export class BaseClient {
       console.log(error);
 
       /// @ts-ignore
-      if (error.code === "AUTH_TOKEN_EXPIRED") {
+      if (
+        error instanceof MechmateError &&
+        error.code === "AUTH_TOKEN_EXPIRED"
+      ) {
         if (this.refreshPromise) {
           const refreshSuccessful = await this.refreshPromise;
           if (refreshSuccessful) {
@@ -86,7 +91,16 @@ export class BaseClient {
         this.config.onError(error);
       }
 
-      throw error;
+      if (error instanceof MechmateError) {
+        throw error;
+      }
+
+      throw new MechmateError(
+        "Unknown error occured",
+        "ERR_UNKNOWN",
+        {},
+        undefined,
+      );
     }
   }
 
@@ -165,7 +179,7 @@ export class BaseClient {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw errorData;
+      throw MechmateError.fromApiError(errorData);
     }
 
     return response;

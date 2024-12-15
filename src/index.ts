@@ -1,6 +1,10 @@
+import { z } from "zod";
 import { AuthClient } from "./client/auth";
 import { AuthTokens, BaseClient, SDKConfig } from "./client/base";
 import { WorkorderClient } from "./client/workorder";
+import { customErrorMap } from "./utils/zod-errors";
+
+z.setErrorMap(customErrorMap);
 
 // Entity schemas
 export * from "./schemas/workorder.schema";
