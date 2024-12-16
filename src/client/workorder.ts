@@ -24,7 +24,10 @@ export class WorkorderClient extends BaseClient {
   async create(
     data: CreateWorkorderRequest,
   ): Promise<SDKResponse<WorkorderResponse>> {
+    console.log("data", data);
     const validatedData = validateRequest(CreateWorkorderSchema, data);
+
+    console.log("validateData", validatedData);
     return this.fetch<SDKResponse<WorkorderResponse>>(
       "/worksheets",
       "POST",

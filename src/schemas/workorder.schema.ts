@@ -1,16 +1,14 @@
 import { z } from "zod";
+import { CustomerBaseSchema } from "./customer.schema";
 
-const mobileRegex = /^(\+?[1-9]\d{0,3}[- ]?)?\d{3}[- ]?\d{3}[- ]?\d{4}$/;
+const WorkorderCustomerSchema = CustomerBaseSchema.extend({
+  uuid: z.string().uuid().optional(),
+});
 
 export const CreateWorkorderSchema = z.object({
   statusId: z.number(),
 
-  customer: z.object({
-    email: z.string().email().optional(),
-    fullname: z.string().optional(),
-    mobile: z.string().regex(mobileRegex),
-    uuid: z.string().uuid().optional(),
-  }),
+  customer: WorkorderCustomerSchema,
 
   technician: z.object({ uuid: z.string().uuid() }).optional(),
   mech: z.object({
