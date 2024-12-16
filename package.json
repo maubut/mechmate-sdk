@@ -1,5 +1,5 @@
 {
-  "name": "@mechmate/sdk",
+  "name": "@mechmateio/sdk",
   "version": "0.1.0",
   "description": "Shared schema validation library for MechMate applications",
   "publishConfig": {
