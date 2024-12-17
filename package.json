@@ -20,9 +20,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "build:esm": "tsc -p tsconfig.esm.json",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run rename:cjs",
     "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "rename:cjs": "find dist/cjs -name \"*.js\" -exec sh -c 'mv \"$1\" \"${1%.js}.cjs\"' _ {} \\;",
+    "clean": "rimraf dist",
     "build:watch": "concurrently \"npm run build:esm -- -w\" \"npm run build:cjs -- -w\"",
     "clean": "rimraf dist",
     "dev": "concurrently \"npm run build:watch\" \"nodemon -w dist -x 'yalc push'\"",
