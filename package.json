@@ -8,25 +8,19 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.cjs",
-      "types": "./dist/esm/index.d.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
-  "main": "./dist/cjs/index.mjs",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run rename:cjs",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "rename:cjs": "find dist/cjs -name \"*.js\" -exec sh -c 'mv \"$1\" \"${1%.js}.cjs\"' _ {} \\;",
+    "build": "npm run clean && tsc",
     "clean": "rimraf dist",
-    "build:watch": "concurrently \"npm run build:esm -- -w\" \"npm run build:cjs -- -w\"",
-    "dev": "concurrently \"npm run build:watch\" \"nodemon -w dist -x 'yalc push'\"",
+    "dev": "concurrently \"npm run build -- --watch\" \"nodemon -w dist -x 'yalc push'\"",
     "prepare": "npm run build",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\""
