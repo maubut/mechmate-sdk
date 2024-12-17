@@ -5,18 +5,28 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/index.js",
   "type": "module",
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts"
+    }
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc -w",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:watch": "concurrently \"npm run build:esm -- -w\" \"npm run build:cjs -- -w\"",
     "clean": "rimraf dist",
     "dev": "concurrently \"npm run build:watch\" \"nodemon -w dist -x 'yalc push'\"",
-    "prepare": "npm run clean && npm run build",
+    "prepare": "npm run build",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\""
   },
