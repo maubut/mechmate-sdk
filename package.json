@@ -23,6 +23,7 @@
     "dev": "concurrently \"npm run build -- --watch\" \"nodemon -w dist -x 'yalc push'\"",
     "prepare": "npm run build",
     "lint": "eslint src --ext .ts",
+    "copy-schemas": "node --loader ts-node/esm --no-warnings scripts/copy-schemas.ts",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
@@ -36,6 +37,7 @@
     "concurrently": "^9.1.0",
     "nodemon": "^3.1.7",
     "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   }
 }
