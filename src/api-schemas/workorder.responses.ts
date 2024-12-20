@@ -1,8 +1,14 @@
-import { z } from "zod";
-import { CustomerBaseSchema } from "./customer.schema";
+/**
+ * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
+ * Last updated: 2024-12-20T20:49:24.050Z
+ * Update this file when API schema changes
+ */
+
+import { z } from 'zod';
+import { CustomerBaseSchema } from './customer.responses';
 
 const WorkorderCustomerSchema = CustomerBaseSchema.extend({
-  uuid: z.string().uuid().optional(),
+  uuid: z.string().uuid().optional()
 });
 
 export const CreateWorkorderSchema = z.object({
@@ -19,24 +25,24 @@ export const CreateWorkorderSchema = z.object({
       id: z.number(),
       make: z.object({
         id: z.number(),
-        name: z.string(),
-      }),
-    }),
-  }),
+        name: z.string()
+      })
+    })
+  })
 });
 
 export const UpdateWorkorderSchema = CreateWorkorderSchema.partial();
 
 export const DeleteWorkorderSchema = z.object({
   uuid: z.string().uuid({
-    message: "Invalid workorder UUID",
-  }),
+    message: 'Invalid workorder UUID'
+  })
 });
 
 export const BatchDeleteWorkorderSchema = z.object({
   uuids: z.array(z.string().uuid()).min(1, {
-    message: "At least one workorder UUID must be provided",
-  }),
+    message: 'At least one workorder UUID must be provided'
+  })
 });
 
 export type CreateWorkorderRequest = z.infer<typeof CreateWorkorderSchema>;
@@ -56,13 +62,13 @@ export const WorkorderResponseSchema = z.object({
   insights: z
     .object({
       DONE: z.number().optional(),
-      total: z.number().optional(),
+      total: z.number().optional()
     })
-    .optional(),
+    .optional()
 });
 
 export const WorkorderListResponseSchema = z.object({
-  list: z.array(WorkorderResponseSchema),
+  list: z.array(WorkorderResponseSchema)
 });
 
 export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
