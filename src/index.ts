@@ -9,6 +9,7 @@ z.setErrorMap(customErrorMap);
 
 // Entity schemas
 export * from "./schemas/workorder.schema";
+export * from "./schemas/account.schema";
 export * from "./schemas/signup.schema";
 export * from "./schemas/signin.schema";
 export * from "./schemas/user.schema";
