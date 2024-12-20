@@ -4,25 +4,37 @@ import {
   CreateWorkorderSchema,
   WorkorderResponse,
 } from "../schemas/workorder.schema";
+import { PaginatedResponse, QueryParams } from "../types";
 import { validateRequest } from "../utils/validation";
 import { BaseClient, SDKResponse } from "./base";
 
+export interface WorkorderQueryParams extends QueryParams {
+  filters?: WorksheetFilter[];
+}
+
 export class WorkorderClient extends BaseClient {
   async getAll(
-    filters: WorksheetFilter[] = [],
-  ): Promise<SDKResponse<WorkorderResponse[]>> {
-    const queryParams = this.formatFilters(filters);
+    params: WorkorderQueryParams = {}
+  ): Promise<SDKResponse<PaginatedResponse<WorkorderResponse>>> {
+    const { filters = [], page = 1, limit = 20, sort, order } = params;
 
-    const response = await this.fetch<SDKResponse<WorkorderResponse[]>>(
-      `/worksheets${queryParams ? `?${queryParams}` : ""}`,
-      "GET",
-    );
+    const queryParams = this.formatQueryParams({
+      filters,
+      page,
+      limit,
+      sort,
+      order,
+    });
+
+    const response = await this.fetch<
+      SDKResponse<PaginatedResponse<WorkorderResponse>>
+    >(`/worksheets${queryParams ? `?${queryParams}` : ""}`, "GET");
 
     return response;
   }
 
   async create(
-    data: CreateWorkorderRequest,
+    data: CreateWorkorderRequest
   ): Promise<SDKResponse<WorkorderResponse>> {
     console.log("data", data);
     const validatedData = validateRequest(CreateWorkorderSchema, data);
@@ -31,21 +43,34 @@ export class WorkorderClient extends BaseClient {
     return this.fetch<SDKResponse<WorkorderResponse>>(
       "/worksheets",
       "POST",
-      validatedData,
+      validatedData
     );
   }
 
-  private formatFilters(filters: WorksheetFilter[]): string {
-    if (!filters.length) return "";
+  private formatQueryParams(params: WorkorderQueryParams): string {
+    const queryParts: string[] = [];
 
-    return filters
-      .map((filter) => {
+    // Add pagination params
+    if (params.page) queryParts.push(`page=${params.page}`);
+    if (params.limit) queryParts.push(`limit=${params.limit}`);
+
+    // Add sorting params
+    if (params.sort) {
+      queryParts.push(`sort=${params.sort}`);
+      if (params.order) queryParts.push(`order=${params.order}`);
+    }
+
+    // Add filters
+    if (params.filters?.length) {
+      const filterParams = params.filters.map((filter) => {
         const value = Array.isArray(filter.value)
           ? filter.value.join(",")
           : filter.value;
-
         return `${filter.field}=${filter.operator}=${value}`;
-      })
-      .join("&");
+      });
+      queryParts.push(...filterParams);
+    }
+
+    return queryParts.length ? queryParts.join("&") : "";
   }
 }
