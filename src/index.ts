@@ -9,7 +9,6 @@ z.setErrorMap(customErrorMap);
 
 // Entity schemas
 export * from "./schemas/workorder.schema";
-export * from "./schemas/account.schema";
 export * from "./schemas/signup.schema";
 export * from "./schemas/signin.schema";
 export * from "./schemas/user.schema";
@@ -18,8 +17,11 @@ export * from "./utils/validation";
 
 export * from "./types";
 
+// API schemas
+export * from "./api-schemas/account.responses";
+
 // Grouped exports for covenience
-export * as workorderSchemas from "./schemas/workorder.schema";
+export * as apiSchemas from "./api-schemas";
 
 export class MechmateSDK {
   public auth: AuthClient;

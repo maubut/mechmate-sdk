@@ -1,17 +1,17 @@
-import { z } from "zod";
 import { BaseClient, SDKResponse } from "./base";
 import { validateRequest } from "../utils/validation";
 import {
-  AccountPreferencesRequest,
   AccountPreferencesResponse,
-  AccountPreferencesSchema,
-} from "../schemas/account.schema";
+  AccountPreferencesResponseSchema,
+  CreateAccountPreferencesRequest,
+  CreateAccountPreferencesSchema,
+} from "../api-schemas/account.responses";
 
 export class AccountClient extends BaseClient {
   async savePreferences(
-    data: AccountPreferencesRequest
+    data: CreateAccountPreferencesRequest
   ): Promise<SDKResponse<AccountPreferencesResponse>> {
-    const validatedData = validateRequest(AccountPreferencesSchema, data);
+    const validatedData = validateRequest(CreateAccountPreferencesSchema, data);
 
     return this.fetch<SDKResponse<AccountPreferencesResponse>>(
       "/account/preferences",
@@ -21,9 +21,16 @@ export class AccountClient extends BaseClient {
   }
 
   async getPreferences(): Promise<SDKResponse<AccountPreferencesResponse>> {
-    return this.fetch<SDKResponse<AccountPreferencesResponse>>(
+    const response = await this.fetch<SDKResponse<AccountPreferencesResponse>>(
       "/account/preferences",
       "GET"
     );
+
+    const validatedData = AccountPreferencesResponseSchema.parse(response.data);
+
+    return {
+      ...response,
+      data: validatedData,
+    };
   }
 }
