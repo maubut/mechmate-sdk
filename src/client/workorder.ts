@@ -1,10 +1,13 @@
-import { WorksheetFilter } from "../schemas//filters";
+import { PaginatedResponse, PaginatedResponseSchema } from "../api-schemas";
 import {
   CreateWorkorderRequest,
   CreateWorkorderSchema,
   WorkorderResponse,
-} from "../schemas/workorder.schema";
-import { PaginatedResponse, QueryParams } from "../types";
+  WorkorderResponseSchema,
+} from "../api-schemas/workorder.responses";
+import { WorksheetFilter } from "../schemas//filters";
+
+import { QueryParams } from "../types";
 import { validateRequest } from "../utils/validation";
 import { BaseClient, SDKResponse } from "./base";
 
@@ -30,21 +33,31 @@ export class WorkorderClient extends BaseClient {
       SDKResponse<PaginatedResponse<WorkorderResponse>>
     >(`/worksheets${queryParams ? `?${queryParams}` : ""}`, "GET");
 
-    return response;
+    const validatedData = validateRequest(
+      PaginatedResponseSchema(WorkorderResponseSchema),
+      response.data
+    );
+
+    return { ...response, data: validatedData };
   }
 
   async create(
     data: CreateWorkorderRequest
   ): Promise<SDKResponse<WorkorderResponse>> {
-    console.log("data", data);
-    const validatedData = validateRequest(CreateWorkorderSchema, data);
+    const validatedRequestData = validateRequest(CreateWorkorderSchema, data);
 
-    console.log("validateData", validatedData);
-    return this.fetch<SDKResponse<WorkorderResponse>>(
+    const response = await this.fetch<SDKResponse<WorkorderResponse>>(
       "/worksheets",
       "POST",
-      validatedData
+      validatedRequestData
     );
+
+    const validatedResponseData = validateRequest(
+      WorkorderResponseSchema,
+      response.data
+    );
+
+    return { ...response, data: validatedResponseData };
   }
 
   private formatQueryParams(params: WorkorderQueryParams): string {
