@@ -1,34 +1,41 @@
 import {
-  SigninSchema,
-  SigninResponse,
-  SigninRequest,
-} from "../schemas/signin.schema";
-import {
-  SignupRequest,
-  SignupResponse,
-  SignupSchema,
-} from "../schemas/signup.schema";
+  CreateSessionRequest,
+  CreateSessionSchema,
+  SessionResponse,
+  SessionResponseSchema,
+} from "../api-schemas/session";
+
+import { SignupRequest, SignupResponse } from "../schemas/signup.schema";
 import { validateRequest } from "../utils/validation";
 import { BaseClient, SDKResponse } from "./base";
 
 export class AuthClient extends BaseClient {
-  async login(data: SigninRequest): Promise<SDKResponse<SigninResponse>> {
-    const validatedData = validateRequest(SigninSchema, data);
+  async login(
+    data: CreateSessionRequest
+  ): Promise<SDKResponse<SessionResponse>> {
+    const validatedData = validateRequest(CreateSessionSchema, data);
 
-    return this.fetch<SDKResponse<SigninResponse>>(
+    const response = await this.fetch<SDKResponse<SessionResponse>>(
       "/auth",
       "POST",
-      validatedData,
+      validatedData
     );
+
+    const validatedResponseData = validateRequest(
+      SessionResponseSchema,
+      response.data
+    );
+
+    return { ...response, data: validatedResponseData };
   }
 
   async signup(data: SignupRequest): Promise<SDKResponse<SignupResponse>> {
-    const validatedData = validateRequest(SignupSchema, data);
+    const validatedData = validateRequest(CreateSessionSchema, data);
 
     return this.fetch<SDKResponse<SignupResponse>>(
       "/users",
       "POST",
-      validatedData,
+      validatedData
     );
   }
 }
