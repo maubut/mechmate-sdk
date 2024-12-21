@@ -10,7 +10,7 @@ export const SignupSchema = z.object({
       z
         .string()
         .regex(/.*[!@#$%^&*]/)
-        .regex(/.*\d/),
+        .regex(/.*\d/)
     ),
   email: z
     .string()

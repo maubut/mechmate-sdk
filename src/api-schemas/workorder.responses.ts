@@ -1,12 +1,13 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2024-12-21T13:23:14.082Z
+ * Last updated: 2024-12-21T15:26:16.297Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
 import { CustomerBaseSchema } from './customer.responses';
 import { BaseFilterSchema } from './filters';
+import { QueryParams } from './common/query-params';
 
 export const WorkorderFilterableFields = {
   status: 'string',
@@ -21,6 +22,10 @@ export const WorkorderFilterSchema = BaseFilterSchema.extend({
   field: z.enum(workorderFields as [string, ...string[]]),
   entityType: z.literal('workorder')
 });
+
+export interface WorkorderQueryParams extends QueryParams {
+  filters?: WorkorderFilter[];
+}
 
 export type WorkorderFilter = z.infer<typeof WorkorderFilterSchema>;
 
