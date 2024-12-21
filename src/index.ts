@@ -11,7 +11,6 @@ z.setErrorMap(customErrorMap);
 export * from "./schemas/signup.schema";
 export * from "./schemas/signin.schema";
 export * from "./schemas/user.schema";
-export * from "./schemas/session.schema";
 export * from "./utils/validation";
 
 export * from "./types";

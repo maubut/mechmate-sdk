@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/account.responses.ts)
- * Last updated: 2024-12-21T01:18:17.929Z
+ * Last updated: 2024-12-21T13:23:14.076Z
  * Update this file when API schema changes
  */
 
@@ -13,6 +13,33 @@ export const AccountPreferencesBaseSchema = z.object({
   language: z.string(),
   hourlyRates: PriceBaseSchema.optional()
 });
+
+export const AccountPackageBaseSchema = z
+  .object({
+    name: z.string(),
+    startedAt: z.union([z.date(), z.string().datetime()]).optional(),
+    expireAt: z.union([z.date(), z.string().datetime()]).optional(),
+    isTrial: z.boolean().nullable().optional()
+  })
+  .refine(
+    (data) => {
+      if (data.startedAt && data.expireAt) {
+        return data.startedAt < data.expireAt;
+      }
+      return true;
+    },
+    {
+      message: 'expireAt must be after startedAt',
+      path: ['expireAt']
+    }
+  );
+
+export const AccountBaseSchema = z.object({
+  preferences: AccountPreferencesBaseSchema,
+  package: AccountPackageBaseSchema
+});
+
+export const AccountResponseSchema = AccountBaseSchema.extend({});
 
 // Request schemas
 export const CreateAccountPreferencesSchema = AccountPreferencesBaseSchema;
@@ -27,15 +54,7 @@ export const DeleteAccountPreferencesSchema = z.object({
 // Response schemas
 export const AccountPreferencesResponseSchema = z.object({
   preferences: AccountPreferencesBaseSchema,
-  packages: z.array(
-    z.object({
-      startedAt: z.date(),
-      expireAt: z.date().nullable(),
-      package: z.object({
-        name: z.string()
-      })
-    })
-  )
+  packages: z.array(AccountPackageBaseSchema)
 });
 
 // Types
