@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/account.responses.ts)
- * Last updated: 2024-12-20T20:49:24.045Z
+ * Last updated: 2024-12-21T01:18:17.929Z
  * Update this file when API schema changes
  */
 

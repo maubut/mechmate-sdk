@@ -1,16 +1,14 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/paginated.responses.ts)
- * Last updated: 2024-12-20T20:49:24.049Z
+ * Last updated: 2024-12-21T01:18:17.935Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
 
-export const PaginatedResponseSchema = <T extends z.ZodTypeAny>(
-  itemSchema: T
-) =>
+export const PaginatedResponseSchema = <T extends z.ZodType>(schema: T) =>
   z.object({
-    items: z.array(itemSchema),
+    items: z.array(schema),
     total: z.number(),
     page: z.number(),
     limit: z.number(),

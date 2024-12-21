@@ -18,6 +18,7 @@ export * from "./types";
 
 // API schemas
 export * from "./api-schemas/account.responses";
+export * from "./api-schemas/filters";
 
 // Grouped exports for covenience
 export * as apiSchemas from "./api-schemas";

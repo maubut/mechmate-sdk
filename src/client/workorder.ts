@@ -2,17 +2,17 @@ import { PaginatedResponse, PaginatedResponseSchema } from "../api-schemas";
 import {
   CreateWorkorderRequest,
   CreateWorkorderSchema,
+  WorkorderFilter,
   WorkorderResponse,
   WorkorderResponseSchema,
 } from "../api-schemas/workorder.responses";
-import { WorksheetFilter } from "../schemas//filters";
 
 import { QueryParams } from "../types";
 import { validateRequest } from "../utils/validation";
 import { BaseClient, SDKResponse } from "./base";
 
 export interface WorkorderQueryParams extends QueryParams {
-  filters?: WorksheetFilter[];
+  filters?: WorkorderFilter[];
 }
 
 export class WorkorderClient extends BaseClient {
