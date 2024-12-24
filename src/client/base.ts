@@ -52,7 +52,7 @@ export class BaseClient {
     path: string,
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     body?: unknown,
-    options: RequestOptions = {},
+    options: RequestOptions = {}
   ): Promise<T> {
     try {
       const response = await this.makeRequest(path, method, body, options);
@@ -63,13 +63,13 @@ export class BaseClient {
       /// @ts-ignore
       if (
         error instanceof MechmateError &&
-        error.code === "AUTH_TOKEN_EXPIRED"
+        error.message === "AUTH_TOKEN_EXPIRED"
       ) {
         if (this.refreshPromise) {
           const refreshSuccessful = await this.refreshPromise;
           if (refreshSuccessful) {
             return this.makeRequest(path, method, body, options).then(
-              (response) => this.handleResponse(response),
+              (response) => this.handleResponse(response)
             );
           }
         }
@@ -80,7 +80,7 @@ export class BaseClient {
 
         if (refreshSuccessful) {
           return this.makeRequest(path, method, body, options).then(
-            (response) => this.handleResponse(response),
+            (response) => this.handleResponse(response)
           );
         } else {
           this.config.onSessionExpired?.();
@@ -99,7 +99,7 @@ export class BaseClient {
         "Unknown error occured",
         "ERR_UNKNOWN",
         {},
-        undefined,
+        undefined
       );
     }
   }
@@ -116,7 +116,7 @@ export class BaseClient {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ refreshToken: this.refreshToken }),
-        },
+        }
       );
 
       if (!response.ok) {
@@ -148,7 +148,7 @@ export class BaseClient {
     path: string,
     method: string,
     body?: unknown,
-    options: RequestOptions = {},
+    options: RequestOptions = {}
   ) {
     const requestOptions: RequestInit = {
       method,
@@ -166,15 +166,15 @@ export class BaseClient {
       requestOptions.body = JSON.stringify(
         Object.fromEntries(
           Object.entries(body as Record<string, any>).filter(
-            ([_, value]) => value !== "",
-          ),
-        ),
+            ([_, value]) => value !== ""
+          )
+        )
       );
     }
 
     const response = await fetch(
       `${this.config.baseUrl}${path}`,
-      requestOptions,
+      requestOptions
     );
 
     if (!response.ok) {

@@ -19,7 +19,9 @@ export const customErrorMap: z.ZodErrorMap = (issue, _ctx) => {
   switch ((issue as z.ZodIssue).code) {
     case z.ZodIssueCode.invalid_type:
       return {
-        message: `ERR_${path}_INVALID_TYPE_${(issue as z.ZodInvalidTypeIssue).expected.toUpperCase()}`,
+        message: `ERR_${path}_INVALID_TYPE_${(
+          issue as z.ZodInvalidTypeIssue
+        ).expected.toUpperCase()}`,
       };
 
     case z.ZodIssueCode.too_small: {
@@ -43,10 +45,10 @@ export const customErrorMap: z.ZodErrorMap = (issue, _ctx) => {
 
     case z.ZodIssueCode.invalid_string: {
       if ((issue as z.ZodInvalidStringIssue).validation === "email") {
-        return { message: `ERR_${path}_INVALID_EMAIL` };
+        return { message: `ERR_INVALID_${path}` };
       }
       if ((issue as z.ZodInvalidStringIssue).validation === "uuid") {
-        return { message: `ERR_${path}_INVALID_UUID` };
+        return { message: `ERR_INVALID_${path}` };
       }
       // Special handling for password regex validation
       if (path === "PASSWORD") {
