@@ -4,6 +4,7 @@ import { AuthTokens, BaseClient, SDKConfig } from "./client/base";
 import { WorkorderClient } from "./client/workorder";
 import { customErrorMap } from "./utils/zod-errors";
 import { AccountClient } from "./client/account";
+import { MechmateError } from "./errors"; // Add this import
 
 z.setErrorMap(customErrorMap);
 
@@ -19,6 +20,9 @@ export * from "./types";
 export * from "./api-schemas/account.responses";
 export * from "./api-schemas/workorder.responses";
 export * from "./api-schemas/filters";
+
+// Error handling
+export { MechmateError };
 
 // Grouped exports for covenience
 export * as apiSchemas from "./api-schemas";
