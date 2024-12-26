@@ -95,12 +95,7 @@ export class BaseClient {
         throw error;
       }
 
-      throw new MechmateError(
-        "Unknown error occured",
-        "ERR_UNKNOWN",
-        {},
-        undefined
-      );
+      throw new MechmateError("Unknown error occured", "UNKNOWN", "UNKNOWN");
     }
   }
 
