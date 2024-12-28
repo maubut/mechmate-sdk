@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/account.responses.ts)
- * Last updated: 2024-12-21T13:23:14.076Z
+ * Last updated: 2024-12-27T20:34:40.085Z
  * Update this file when API schema changes
  */
 
@@ -14,7 +14,7 @@ export const AccountPreferencesBaseSchema = z.object({
   hourlyRates: PriceBaseSchema.optional()
 });
 
-export const AccountPackageBaseSchema = z
+export const PackageBaseSchema = z
   .object({
     name: z.string(),
     startedAt: z.union([z.date(), z.string().datetime()]).optional(),
@@ -36,7 +36,7 @@ export const AccountPackageBaseSchema = z
 
 export const AccountBaseSchema = z.object({
   preferences: AccountPreferencesBaseSchema,
-  package: AccountPackageBaseSchema
+  package: PackageBaseSchema
 });
 
 export const AccountResponseSchema = AccountBaseSchema.extend({});
@@ -54,7 +54,7 @@ export const DeleteAccountPreferencesSchema = z.object({
 // Response schemas
 export const AccountPreferencesResponseSchema = z.object({
   preferences: AccountPreferencesBaseSchema,
-  packages: z.array(AccountPackageBaseSchema)
+  packages: z.array(PackageBaseSchema)
 });
 
 // Types

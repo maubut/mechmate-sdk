@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserResponseSchema } from "./user.schema";
+import { UserResponseSchema } from "../api-schemas";
 
 export const SignupSchema = z.object({
   fullname: z.string().min(1),
