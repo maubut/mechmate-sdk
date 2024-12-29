@@ -41,6 +41,12 @@ export class WorkorderClient extends BaseClient {
     return { ...response, data: validatedData };
   }
 
+  async getOne(uuid: string): Promise<SDKResponse<WorkorderResponse>> {
+    const response = await this.fetch<SDKResponse<WorkorderResponse>>(`/worksheets/${uuid}`, "GET");
+    const validatedData = validateRequest(WorkorderResponseSchema, response.data);
+    return { ...response, data: validatedData}
+  }
+
   async create(
     data: CreateWorkorderRequest
   ): Promise<SDKResponse<WorkorderResponse>> {
