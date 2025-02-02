@@ -1,13 +1,12 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/session.ts)
- * Last updated: 2024-12-21T13:23:14.081Z
+ * Last updated: 2025-02-02T13:24:32.992Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
-import { UserResponseSchema } from './user';
+import { emailSchema, passwordSchema, usernameSchema, UserResponseSchema } from './user';
 import { AccountResponseSchema } from './account.responses';
-const usernameRegex = /^[a-zA-Z0-9]+([_. -]?[a-zA-Z0-9])*$/;
 
 export const SessionResponseSchema = z.object({
   user: UserResponseSchema,
@@ -20,29 +19,9 @@ export type SessionResponse = z.infer<typeof SessionResponseSchema>;
 
 export const CreateSessionSchema = z
   .object({
-    password: z
-      .string()
-      .min(6)
-      .regex(/.*[!@#$%^&*]/, 'Password must contain a special character')
-      .regex(/.*\d/, 'Password must contain a number'),
-
-    username: z
-      .string()
-      .min(1)
-      .transform((str) => str.toLowerCase())
-      .pipe(
-        z.union([
-          z.string().email('ERR_USERNAME_INVALID_FORMAT'),
-          z.string().regex(usernameRegex, 'ERR_USERNAME_INVALID_FORMAT')
-        ])
-      )
-      .optional(),
-
-    email: z
-      .string()
-      .email()
-      .transform((v) => v.toLowerCase())
-      .optional()
+    password: passwordSchema,
+    username: usernameSchema.optional(),
+    email: emailSchema.optional()
   })
   .refine(
     (data) => {
