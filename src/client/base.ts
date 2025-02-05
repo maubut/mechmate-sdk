@@ -60,11 +60,14 @@ export class BaseClient {
     } catch (error) {
       console.log(error);
 
-      /// @ts-ignore
       if (
         error instanceof MechmateError &&
-        error.message === "AUTH_TOKEN_EXPIRED"
+       (error.message === "AUTH_TOKEN_EXPIRED" || error.message === "AUTH_NO_TOKEN") 
       ) {
+
+        if(error.message === "AUTH_TOKEN_EXPIRED") {
+          console.log('Token expired, attempting refresh');
+
         if (this.refreshPromise) {
           const refreshSuccessful = await this.refreshPromise;
           if (refreshSuccessful) {
@@ -82,9 +85,9 @@ export class BaseClient {
           return this.makeRequest(path, method, body, options).then(
             (response) => this.handleResponse(response)
           );
-        } else {
-          this.config.onSessionExpired?.();
         }
+      }
+          this.config.onSessionExpired?.();
       }
 
       if (options.handleErrors !== false && this.config.onError) {
