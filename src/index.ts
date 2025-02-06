@@ -54,7 +54,7 @@ export class MechmateSDK extends BaseClient {
    /**
    * Make a direct API call while maintaining SDK features
    */
-  async call<T>(
+  async request<T>(
     path: string,
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     options: RequestOptions = {},
