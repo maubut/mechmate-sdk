@@ -1,5 +1,11 @@
 import { MechmateError } from "../errors";
 
+export interface TokenStorage {
+  getTokens(): { accessToken: string | null; refreshToken: string | null };
+  setTokens(tokens: AuthTokens): void;
+  clearTokens(): void;
+}
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
@@ -42,9 +48,11 @@ export class BaseClient {
   protected accessToken?: string;
   protected refreshToken?: string;
 
-  constructor(protected config: SDKConfig) {
-    this.accessToken = config.accessToken;
-    this.refreshToken = config.refreshToken;
+  constructor(protected config: SDKConfig, private tokenStorage: TokenStorage) {
+
+    const { accessToken, refreshToken } = tokenStorage.getTokens();
+    this.accessToken = accessToken || undefined;
+    this.refreshToken = refreshToken || undefined;
   }
 
   public setTokens(tokens: AuthTokens) {
@@ -151,6 +159,12 @@ export class BaseClient {
       if (data.accessToken && data.refreshToken) {
         this.accessToken = data.accessToken;
         this.refreshToken = data.refreshToken;
+
+        this.tokenStorage.setTokens({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        });
+  
 
         this.config.onTokensRefreshed?.({
           accessToken: data.accessToken,

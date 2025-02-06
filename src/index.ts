@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { AuthClient } from "./client/auth";
-import { AuthTokens, BaseClient, RequestOptions, SDKConfig, SDKResponse } from "./client/base";
+import { AuthTokens, BaseClient, RequestOptions, SDKConfig, SDKResponse, TokenStorage } from "./client/base";
 import { WorkorderClient } from "./client/workorder";
 import { customErrorMap } from "./utils/zod-errors";
 import { AccountClient } from "./client/account";
@@ -28,6 +28,10 @@ export { MechmateError };
 // Grouped exports for covenience
 export * as apiSchemas from "./api-schemas";
 
+export interface MechmateSDKConfig extends SDKConfig {
+  tokenStorage: TokenStorage; 
+}
+
 export class MechmateSDK extends BaseClient {
   public auth: AuthClient;
   public workorder: WorkorderClient;
@@ -36,13 +40,13 @@ export class MechmateSDK extends BaseClient {
   
   private clients: BaseClient[] = [];
 
-  constructor(config: SDKConfig) {
-    super(config);
+  constructor(config: MechmateSDKConfig) {
+    super(config, config.tokenStorage);
 
-    this.workorder = new WorkorderClient(config);
-    this.auth = new AuthClient(config);
-    this.account = new AccountClient(config);
-    this.user = new UserClient(config);
+    this.workorder = new WorkorderClient(config, config.tokenStorage);
+    this.auth = new AuthClient(config, config.tokenStorage);
+    this.account = new AccountClient(config, config.tokenStorage);
+    this.user = new UserClient(config, config.tokenStorage);
 
     this.clients = [this.auth, this.workorder, this.account, this.user];
   }
