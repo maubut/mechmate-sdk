@@ -1,6 +1,6 @@
 {
   "name": "@mechmateio/sdk",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Shared schema validation library for MechMate applications",
   "publishConfig": {
     "access": "public"
