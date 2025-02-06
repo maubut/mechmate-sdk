@@ -30,6 +30,10 @@ export interface SDKConfig {
 export interface RequestOptions {
   handleErrors?: boolean;
   headers?: Record<string, string>;
+  validateRequest?: boolean;
+  validateResponse?: boolean;
+  requestSchema?: any;
+  responseSchema?: any;
 }
 
 export class BaseClient {
@@ -48,6 +52,14 @@ export class BaseClient {
     this.refreshToken = tokens.refreshToken;
   }
 
+    /**
+   * Generic request method that can be used for direct API calls
+   * while maintaining SDK features like error handling and token refresh
+   */
+  public async request<T>(path: string, method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH", options: RequestOptions = {}, body: unknown): Promise<SDKResponse<T>> {
+    return this.fetch<SDKResponse<T>>(path, method, body, options);
+  }
+
   protected async fetch<T>(
     path: string,
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
@@ -55,8 +67,21 @@ export class BaseClient {
     options: RequestOptions = {}
   ): Promise<T> {
     try {
+
+      let validateBody = body;
+      if(options.validateRequest && options.requestSchema && body) {
+        validateBody = options.requestSchema.parse(body);
+      }
+
       const response = await this.makeRequest(path, method, body, options);
-      return this.handleResponse(response);
+      const handledResponse = await this.handleResponse<SDKResponse<T>>(response);
+
+      if(options.validateResponse && options.responseSchema && handledResponse.data) {
+        handledResponse.data = options.responseSchema.parse(handledResponse.data);
+      }
+
+      return handledResponse as T;
+
     } catch (error) {
       console.log(error);
 

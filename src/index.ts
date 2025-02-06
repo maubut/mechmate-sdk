@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { AuthClient } from "./client/auth";
-import { AuthTokens, BaseClient, SDKConfig } from "./client/base";
+import { AuthTokens, BaseClient, RequestOptions, SDKConfig, SDKResponse } from "./client/base";
 import { WorkorderClient } from "./client/workorder";
 import { customErrorMap } from "./utils/zod-errors";
 import { AccountClient } from "./client/account";
@@ -28,7 +28,7 @@ export { MechmateError };
 // Grouped exports for covenience
 export * as apiSchemas from "./api-schemas";
 
-export class MechmateSDK {
+export class MechmateSDK extends BaseClient {
   public auth: AuthClient;
   public workorder: WorkorderClient;
   public account: AccountClient;
@@ -37,6 +37,8 @@ export class MechmateSDK {
   private clients: BaseClient[] = [];
 
   constructor(config: SDKConfig) {
+    super(config);
+
     this.workorder = new WorkorderClient(config);
     this.auth = new AuthClient(config);
     this.account = new AccountClient(config);
@@ -48,4 +50,15 @@ export class MechmateSDK {
   setTokens(tokens: AuthTokens) {
     this.clients.forEach((client) => client.setTokens(tokens));
   }
+
+   /**
+   * Make a direct API call while maintaining SDK features
+   */
+  async call<T>(
+    path: string,
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+    options: RequestOptions = {},
+    body?: unknown): Promise<SDKResponse<T>> {
+      return this.request<T>(path, method, options, body);
+    }
 }
