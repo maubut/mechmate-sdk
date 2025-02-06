@@ -59,6 +59,6 @@ export class MechmateSDK extends BaseClient {
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     options: RequestOptions = {},
     body?: unknown): Promise<SDKResponse<T>> {
-      return this.request<T>(path, method, options, body);
+      return this.fetch<SDKResponse<T>>(path, method, body, options);
     }
 }
