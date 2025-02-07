@@ -1,4 +1,4 @@
-import { BaseClient, SDKResponse } from "./base";
+import { BaseClient } from "./base";
 import { validateRequest } from "../utils/validation";
 import {
   AccountPreferencesResponse,
@@ -6,14 +6,20 @@ import {
   CreateAccountPreferencesRequest,
   CreateAccountPreferencesSchema,
 } from "../api-schemas/account.responses";
+import { SDKResponse } from "../types";
+import { HTTPClient } from "./http";
 
-export class AccountClient extends BaseClient {
+export class AccountClient  {
+
+  constructor(private httpClient: HTTPClient) {
+  }
+
   async savePreferences(
     data: CreateAccountPreferencesRequest
   ): Promise<SDKResponse<AccountPreferencesResponse>> {
     const validatedData = validateRequest(CreateAccountPreferencesSchema, data);
 
-    return this.fetch<SDKResponse<AccountPreferencesResponse>>(
+    return this.httpClient.fetch<AccountPreferencesResponse>(
       "/account/preferences",
       "PUT",
       validatedData
@@ -21,7 +27,7 @@ export class AccountClient extends BaseClient {
   }
 
   async getPreferences(): Promise<SDKResponse<AccountPreferencesResponse>> {
-    const response = await this.fetch<SDKResponse<AccountPreferencesResponse>>(
+    const response = await this.httpClient.fetch<AccountPreferencesResponse>(
       "/account/preferences",
       "GET"
     );

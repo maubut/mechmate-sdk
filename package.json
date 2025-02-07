@@ -20,7 +20,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rimraf dist",
-    "dev": "concurrently \"npm run build -- --watch\" \"nodemon -w dist -x 'yalc push'\"",
+    "dev": "tsc --watch",
     "prepare": "npm run build",
     "lint": "eslint src --ext .ts",
     "copy-schemas": "node --loader ts-node/esm --no-warnings scripts/copy-schemas.ts",

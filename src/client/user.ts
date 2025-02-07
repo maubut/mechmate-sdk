@@ -1,12 +1,16 @@
 import { PaginatedResponse, UserResponse } from "../api-schemas";
-import { BaseClient, SDKResponse } from "./base";
+import { HTTPClient } from "./http"
 
-export class UserClient extends BaseClient {
+export class UserClient  {
+
+   constructor(private httpClient: HTTPClient) {
+    }
+
    async getAll() {
-    return this.fetch<SDKResponse<PaginatedResponse<UserResponse>>>(`/users`, "GET");
+    return this.httpClient.fetch<PaginatedResponse<UserResponse>>(`/users`, "GET");
    } 
 
    async getOne(uud: string) {
-    return this.fetch<SDKResponse<UserResponse>>(`/users/${uud}`, "GET");
+    return this.httpClient.fetch<UserResponse>(`/users/${uud}`, "GET");
    }
 }

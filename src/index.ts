@@ -1,12 +1,14 @@
 import { z } from "zod";
 import { AuthClient } from "./client/auth";
-import { AuthTokens, BaseClient, RequestOptions, SDKConfig, SDKResponse, TokenStorage } from "./client/base";
+import { BaseClient } from "./client/base";
 import { WorkorderClient } from "./client/workorder";
 import { customErrorMap } from "./utils/zod-errors";
 import { AccountClient } from "./client/account";
 import { MechmateError } from "./errors"; // Add this import
 import { UserClient } from "./client/user";
-
+import { TokenManager } from "./utils/token-manager";
+import { AuthTokens, RequestOptions, SDKConfig, SDKResponse } from "./types";
+import { HTTPClient } from "./client/http";
 z.setErrorMap(customErrorMap);
 
 // Entity schemas
@@ -28,41 +30,43 @@ export { MechmateError };
 // Grouped exports for covenience
 export * as apiSchemas from "./api-schemas";
 
-export interface MechmateSDKConfig extends SDKConfig {
-  tokenStorage: TokenStorage; 
-}
 
-export class MechmateSDK extends BaseClient {
+export class MechmateSDK {
+  private tokenManager: TokenManager;
+  private httpClient: HTTPClient;  // Add this
+
   public auth: AuthClient;
   public workorder: WorkorderClient;
   public account: AccountClient;
   public user: UserClient;
-  
-  private clients: BaseClient[] = [];
 
-  constructor(config: MechmateSDKConfig) {
-    super(config, config.tokenStorage);
+  constructor(config: SDKConfig) {
+    // Initialize token manager
+    this.tokenManager = new TokenManager(config.tokenStorage, config);
 
-    this.workorder = new WorkorderClient(config, config.tokenStorage);
-    this.auth = new AuthClient(config, config.tokenStorage);
-    this.account = new AccountClient(config, config.tokenStorage);
-    this.user = new UserClient(config, config.tokenStorage);
+    this.httpClient = new HTTPClient(config, this.tokenManager);
 
-    this.clients = [this.auth, this.workorder, this.account, this.user];
+    // Initialize domain clients
+    this.auth = new AuthClient(this.httpClient, this.tokenManager);
+    this.workorder = new WorkorderClient(this.httpClient);
+    this.account = new AccountClient(this.httpClient);
+    this.user = new UserClient(this.httpClient); 
   }
 
   setTokens(tokens: AuthTokens) {
-    this.clients.forEach((client) => client.setTokens(tokens));
+    this.tokenManager.setTokens(tokens);
   }
 
-   /**
-   * Make a direct API call while maintaining SDK features
-   */
+  clearTokens() {
+    this.tokenManager.clearTokens();
+  }
+
   async request<T>(
     path: string,
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     options: RequestOptions = {},
-    body?: unknown): Promise<SDKResponse<T>> {
-      return this.fetch<SDKResponse<T>>(path, method, body, options);
-    }
+    body?: unknown
+  ): Promise<SDKResponse<T>> {
+    return this.httpClient.fetch<T>(path, method, body, options);
+  }
 }
