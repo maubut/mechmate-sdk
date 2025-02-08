@@ -12,9 +12,35 @@ export class TokenManager {
       const { accessToken, refreshToken } = tokenStorage.getTokens();
       this.accessToken = accessToken;
       this.refreshToken = refreshToken;
+
+      window.addEventListener('storage', (event) => {
+        console.log('Storage event listener', event);
+
+        if(event.key === 'accessToken') {
+          // TODO:
+        }
+      });
+    }
+
+    private isTokenExpired(token: string | null): boolean {
+      if(!token) return true;
+
+      try {
+        const [, payload ] = token.split('.');
+        const decoded = JSON.parse(atob(payload));
+        return decoded.exp * 1000 < Date.now();;
+      } catch {
+        return true;
+      }
+
     }
   
     getAccessToken(): string | null {
+      if(this.isTokenExpired(this.accessToken)) {
+        console.warn('token is expired');
+        return null;
+      }
+      
       return this.accessToken;
     }
   
@@ -37,7 +63,12 @@ export class TokenManager {
   
     async refreshTokens(): Promise<boolean> {
       if (this.refreshPromise) {
+        try {
         return this.refreshPromise;
+        } catch(error) {
+          this.refreshPromise = null;
+          throw error;
+        }
       }
   
       this.refreshPromise = (async () => {
@@ -49,7 +80,7 @@ export class TokenManager {
           });
   
           if (!response.ok) {
-            return false;
+            throw new Error('Token refresh failed');
           }
   
           const data = await response.json();
@@ -63,7 +94,8 @@ export class TokenManager {
           return false;
         } catch (error) {
           console.error('Token refresh failed:', error);
-          return false;
+          this.clearTokens();
+          throw error;
         } finally {
           this.refreshPromise = null;
         }
