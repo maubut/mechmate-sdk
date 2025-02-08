@@ -61,6 +61,24 @@ export class MechmateSDK {
     this.tokenManager.clearTokens();
   }
 
+async getTokenInfo() {
+    const accessToken = await this.tokenManager.getAccessToken();
+    if (!accessToken) return null;
+  
+    try {
+      const [, payload] = accessToken.split('.');
+      const decoded = JSON.parse(atob(payload));
+      const remainingMs = (decoded.exp * 1000) - Date.now();
+      
+      return {
+        remainingSeconds: Math.max(0, Math.floor(remainingMs / 1000)),
+        expiresAt: new Date(decoded.exp * 1000)
+      };
+    } catch {
+      return null;
+    }
+  }
+
   async request<T>(
     path: string,
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",

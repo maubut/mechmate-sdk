@@ -45,7 +45,7 @@ export class HTTPClient extends BaseClient {
         ...options.headers,
       };
   
-      const accessToken = this.tokenManager.getAccessToken();
+      const accessToken = await this.tokenManager.getAccessToken();
       if (accessToken) {
         headers.Authorization = `Bearer ${accessToken}`;
       }

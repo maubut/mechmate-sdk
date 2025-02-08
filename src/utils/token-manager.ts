@@ -13,13 +13,15 @@ export class TokenManager {
       this.accessToken = accessToken;
       this.refreshToken = refreshToken;
 
-      window.addEventListener('storage', (event) => {
-        console.log('Storage event listener', event);
+      /* if(!accessToken && !refreshToken) {
+        this.handleSessionExpired();
+      } */
+    }
 
-        if(event.key === 'accessToken') {
-          // TODO:
-        }
-      });
+    private handleSessionExpired(unexpected: boolean = true) {
+      console.log('handle session expired SDK ')
+      this.clearTokens();
+      this.config.onSessionExpired?.();
     }
 
     private isTokenExpired(token: string | null): boolean {
@@ -28,17 +30,32 @@ export class TokenManager {
       try {
         const [, payload ] = token.split('.');
         const decoded = JSON.parse(atob(payload));
-        return decoded.exp * 1000 < Date.now();;
+                // Add some buffer time (e.g., 30 seconds) to prevent edge cases
+        return (decoded.exp * 1000) - 30000 < Date.now();
       } catch {
         return true;
       }
 
     }
   
-    getAccessToken(): string | null {
-      if(this.isTokenExpired(this.accessToken)) {
+async getAccessToken(): Promise<string | null> {
+
+  if (!this.accessToken && !this.refreshToken) {
+    return null;
+  } 
+
+  if (this.isTokenExpired(this.accessToken) && !this.refreshToken) {
+    this.handleSessionExpired(true);
+    return null;
+  }
+
+      if(this.isTokenExpired(this.accessToken) && this.refreshToken) {
         console.warn('token is expired');
-        return null;
+        const refreshed = await this.refreshTokens();
+
+        if(!refreshed) {
+          return null;
+        }
       }
       
       return this.accessToken;
@@ -63,16 +80,19 @@ export class TokenManager {
   
     async refreshTokens(): Promise<boolean> {
       if (this.refreshPromise) {
-        try {
-        return this.refreshPromise;
-        } catch(error) {
-          this.refreshPromise = null;
-          throw error;
-        }
+        console.log('Waiting for refresh promise to complete...')
+        return await this.refreshPromise;
+      }
+
+      if(!this.refreshToken) {
+        console.log('refreshTokens', 'no tokens')
+        this.handleSessionExpired(true);
+        return false;
       }
   
       this.refreshPromise = (async () => {
         try {
+          console.log('Initiating refresh promise...', this.refreshToken)
           const response = await fetch(`${this.config.baseUrl}/auth/refresh-token`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -85,17 +105,22 @@ export class TokenManager {
   
           const data = await response.json();
           if (data.accessToken && data.refreshToken) {
+            console.log('SDK - refresh promise completed with success')
             this.setTokens({
               accessToken: data.accessToken,
               refreshToken: data.refreshToken,
             });
             return true;
           }
+
+          console.log('refresh promise', 'false')
+
+          this.handleSessionExpired(true);
           return false;
         } catch (error) {
           console.error('Token refresh failed:', error);
-          this.clearTokens();
-          throw error;
+          this.handleSessionExpired(true);
+          return false;
         } finally {
           this.refreshPromise = null;
         }

@@ -47,7 +47,7 @@ export class AuthClient  {
 
   async logout(): Promise<void> {
     try {
-      const accessToken = this.tokenManager.getAccessToken();
+      const accessToken = await this.tokenManager.getAccessToken();
 
       if(accessToken) {
         await this.httpClient.fetch('/auth/logout', "POST").catch( err => {
