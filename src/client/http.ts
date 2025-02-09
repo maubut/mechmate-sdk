@@ -49,10 +49,13 @@ export class HTTPClient extends BaseClient {
       if (accessToken) {
         headers.Authorization = `Bearer ${accessToken}`;
       }
+
+      console.log('SDK Request:', path, headers.Authorization)
   
       const requestOptions: RequestInit = {
         method,
-        headers
+        headers,
+        credentials: 'include'
       };
 
       if (method !== 'GET' && body) {
