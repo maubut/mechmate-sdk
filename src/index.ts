@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AuthClient } from "./client/auth";
-import { BaseClient } from "./client/base";
 import { WorkorderClient } from "./client/workorder";
 import { customErrorMap } from "./utils/zod-errors";
 import { AccountClient } from "./client/account";

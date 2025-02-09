@@ -98,12 +98,20 @@ async getAccessToken(): Promise<string | null> {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ refreshToken: this.refreshToken }),
           });
+
+          console.log('Initiate values:', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken: this.refreshToken }),
+          })
   
           if (!response.ok) {
             throw new Error('Token refresh failed');
           }
   
           const data = await response.json();
+
+          console.log('refreshPromise response:', data, response)
           if (data.accessToken && data.refreshToken) {
             console.log('SDK - refresh promise completed with success')
             this.setTokens({

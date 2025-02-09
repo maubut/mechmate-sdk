@@ -4,6 +4,8 @@ import { TokenManager } from "../utils/token-manager";
 import { BaseClient } from "./base";
 
 export class HTTPClient extends BaseClient {
+    private refreshPromise: Promise<boolean> | null = null;
+
     constructor(
       private config: SDKConfig,
       private tokenManager:TokenManager 
@@ -21,7 +23,14 @@ export class HTTPClient extends BaseClient {
         let response = await this.makeRequest(path, method, body, options);
         
         if (response.status === 401) {
-          const refreshed = await this.tokenManager.refreshTokens();
+          // Wait for any ongoing refresh or initiate a new one
+          if (!this.refreshPromise) {
+            this.refreshPromise = this.tokenManager.refreshTokens();
+          }
+          
+          const refreshed = await this.refreshPromise;
+          this.refreshPromise = null; // Clear the promise
+
           if (refreshed) {
             response = await this.makeRequest(path, method, body, options);
           } else {
@@ -40,12 +49,20 @@ export class HTTPClient extends BaseClient {
     }
   
     private async makeRequest(path: string, method: string, body?: unknown, options: RequestOptions = {}): Promise<Response> {
+      let accessToken;
+
+      if(this.refreshPromise) {
+        await this.refreshPromise;
+        accessToken = await this.tokenManager.getAccessToken();
+      } else {
+        accessToken = await this.tokenManager.getAccessToken();
+      }
+      
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...options.headers,
       };
   
-      const accessToken = await this.tokenManager.getAccessToken();
       if (accessToken) {
         headers.Authorization = `Bearer ${accessToken}`;
       }
