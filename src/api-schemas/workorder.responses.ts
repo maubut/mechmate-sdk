@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2024-12-27T20:34:40.095Z
+ * Last updated: 2025-02-13T16:46:22.210Z
  * Update this file when API schema changes
  */
 
@@ -33,6 +33,26 @@ const WorkorderCustomerSchema = CustomerBaseSchema.extend({
   uuid: z.string().uuid().optional()
 });
 
+export const MechMetricSchema = z.object({
+  license: z.string().optional().nullable(),
+  unit: z.string().optional().nullable(),
+  mileage_in: z.number()
+    .int()
+    .max(999999999, "Mileage value is too large") // 9 digits should be enough
+    .optional()
+    .nullable(),
+  mileage_out: z.number()
+    .int()
+    .max(999999999, "Mileage value is too large")
+    .optional()
+    .nullable(),
+  engineHours: z.number().int()
+    .optional()
+    .nullable(),
+});
+
+const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/; 
+
 export const CreateWorkorderSchema = z.object({
   statusId: z.number(),
 
@@ -42,6 +62,11 @@ export const CreateWorkorderSchema = z.object({
   mech: z.object({
     uuid: z.string().uuid().optional(),
     modelYear: z.number(),
+    vin: z.string()
+    .regex(vinRegex, 'Invalid VIN format - must be 17 characters excluding I, O, and Q')
+    .toUpperCase()  // Normalize to uppercase
+    .optional(),
+    metric: MechMetricSchema,
     model: z.object({
       name: z.string(),
       id: z.number(),
