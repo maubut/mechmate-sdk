@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-02-13T16:46:22.210Z
+ * Last updated: 2025-02-13T17:01:15.060Z
  * Update this file when API schema changes
  */
 
@@ -66,7 +66,7 @@ export const CreateWorkorderSchema = z.object({
     .regex(vinRegex, 'Invalid VIN format - must be 17 characters excluding I, O, and Q')
     .toUpperCase()  // Normalize to uppercase
     .optional(),
-    metric: MechMetricSchema,
+    metric: MechMetricSchema.optional(),
     model: z.object({
       name: z.string(),
       id: z.number(),
