@@ -29,7 +29,6 @@ export { MechmateError };
 // Grouped exports for covenience
 export * as apiSchemas from "./api-schemas";
 
-
 export class MechmateSDK {
   private tokenManager: TokenManager;
   private httpClient: HTTPClient;  // Add this

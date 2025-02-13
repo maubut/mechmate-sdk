@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/user.ts)
- * Last updated: 2025-02-02T13:47:00.189Z
+ * Last updated: 2025-02-12T13:43:34.429Z
  * Update this file when API schema changes
  */
 
@@ -71,6 +71,14 @@ export const CreateUserSchema = z.object({
   password: passwordSchema,
   email: emailSchema.optional() 
 });
+
+export const InviteUserSchema = z.object({
+  fullname: z.string().min(1),
+  username: usernameSchema.optional(),
+  PermissionFlags: z.nativeEnum(PermissionFlagValues).optional(),
+  email: emailSchema.optional()
+})
+
 
 // Utility functions that can be useful in both frontend and backend
 export const isValidEmail = (email: string): boolean => {

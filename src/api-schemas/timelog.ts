@@ -1,11 +1,11 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/timelog.ts)
- * Last updated: 2025-02-02T13:24:32.992Z
+ * Last updated: 2025-02-12T13:43:34.427Z
  * Update this file when API schema changes
  */
 
 import { z } from "zod";
-import { UserBaseSchema } from "./user";
+import {  UserResponseSchema } from "./user";
 import { QueryParams } from "./common/query-params";
 import { BaseFilterSchema } from "./filters";
 
@@ -13,7 +13,7 @@ export const TimeLogBaseSchema = z.object({
     id: z.number().optional(),
     startTime: z.date(),
     endTime: z.date().optional(),
-    user: UserBaseSchema,
+    user: UserResponseSchema,
     duration: z.number().min(0),
     description: z.string().optional(), 
 })

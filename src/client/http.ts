@@ -35,7 +35,7 @@ export class HTTPClient extends BaseClient {
             response = await this.makeRequest(path, method, body, options);
           } else {
             this.config.onSessionExpired?.();
-            throw new MechmateError('Session expired', 'AUTH_SESSION_EXPIRED', 'CLIENT');
+            throw new MechmateError('Session expired', 'UNAUTHORIZED', 'CLIENT', { reason: 'session_expired' });
           }
         }
   
@@ -99,8 +99,22 @@ export class HTTPClient extends BaseClient {
       if (response.status === 204) {
         return { status: response.status, headers } as SDKResponse<T>;
       }
-  
-      const data = await response.json();
+
+      try {
+ const data = await response.json();
       return { data, status: response.status, headers };
-    }
+       
+      } catch(error) {
+       throw new MechmateError(
+        'Invalid JSON response from server',
+        'API_ERROR',
+        'INTERNAL',
+        {
+          status: response.status,
+          error: error instanceof Error ? error.message : String(error)
+        }
+       ) 
+      }
+  
+          }
   }
