@@ -35,7 +35,6 @@ export class AuthClient  {
     );
 
     if(validatedResponseData.accessToken && validatedResponseData.refreshToken) {
-      console.log('validated response data...', validatedResponseData);
       this.tokenManager.setTokens({
         accessToken: validatedResponseData.accessToken,
         refreshToken: validatedResponseData.refreshToken

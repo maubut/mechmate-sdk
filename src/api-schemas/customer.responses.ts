@@ -1,10 +1,11 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/customer.responses.ts)
- * Last updated: 2024-12-21T13:23:14.079Z
+ * Last updated: 2025-02-14T22:01:54.426Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
+import { MechBaseSchema } from './mech.schema';
 
 const mobileRegex = /^(\+?[1-9]\d{0,3}[- ]?)?\d{3}[- ]?\d{3}[- ]?\d{4}$/;
 export const CustomerBaseSchema = z.object({
@@ -12,6 +13,8 @@ export const CustomerBaseSchema = z.object({
   fullname: z.string().optional(),
   mobile: z.string().regex(mobileRegex)
 });
+
+export const CustomerVehiclesSchema = z.array(MechBaseSchema);
 
 export const CreateCustomerSchema = CustomerBaseSchema;
 

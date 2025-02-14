@@ -55,7 +55,6 @@ export class WorkorderClient  {
     data: CreateWorkorderRequest
   ): Promise<SDKResponse<WorkorderResponse>> {
     const validatedRequestData = validateRequest(CreateWorkorderSchema, data);
-
     const response = await this.httpClient.fetch<WorkorderResponse>(
       "/worksheets",
       "POST",

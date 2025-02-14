@@ -67,7 +67,7 @@ export class HTTPClient extends BaseClient {
         headers.Authorization = `Bearer ${accessToken}`;
       }
 
-      console.log('SDK Request:', path, headers.Authorization)
+      // console.log('SDK Request:', path, headers.Authorization)
   
       const requestOptions: RequestInit = {
         method,

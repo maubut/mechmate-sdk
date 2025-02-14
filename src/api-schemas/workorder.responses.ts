@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-02-13T17:01:15.060Z
+ * Last updated: 2025-02-14T02:52:06.159Z
  * Update this file when API schema changes
  */
 
@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { CustomerBaseSchema } from './customer.responses';
 import { BaseFilterSchema } from './filters';
 import { QueryParams } from './common/query-params';
+import { MechBaseSchema } from './mech.schema';
 
 export const WorkorderFilterableFields = {
   status: 'string',
@@ -33,49 +34,11 @@ const WorkorderCustomerSchema = CustomerBaseSchema.extend({
   uuid: z.string().uuid().optional()
 });
 
-export const MechMetricSchema = z.object({
-  license: z.string().optional().nullable(),
-  unit: z.string().optional().nullable(),
-  mileage_in: z.number()
-    .int()
-    .max(999999999, "Mileage value is too large") // 9 digits should be enough
-    .optional()
-    .nullable(),
-  mileage_out: z.number()
-    .int()
-    .max(999999999, "Mileage value is too large")
-    .optional()
-    .nullable(),
-  engineHours: z.number().int()
-    .optional()
-    .nullable(),
-});
-
-const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/; 
-
 export const CreateWorkorderSchema = z.object({
   statusId: z.number(),
-
   customer: WorkorderCustomerSchema,
-
   technician: z.object({ uuid: z.string().uuid() }).optional(),
-  mech: z.object({
-    uuid: z.string().uuid().optional(),
-    modelYear: z.number(),
-    vin: z.string()
-    .regex(vinRegex, 'Invalid VIN format - must be 17 characters excluding I, O, and Q')
-    .toUpperCase()  // Normalize to uppercase
-    .optional(),
-    metric: MechMetricSchema.optional(),
-    model: z.object({
-      name: z.string(),
-      id: z.number(),
-      make: z.object({
-        id: z.number(),
-        name: z.string()
-      })
-    })
-  })
+  mech: MechBaseSchema 
 });
 
 export const UpdateWorkorderSchema = CreateWorkorderSchema.partial();
@@ -105,7 +68,7 @@ export const WorkorderResponseSchema = z.object({
   worksheetId: z.number(),
   statusId: z.number(),
   technician: z.any().optional(),
-  mech: z.any().optional(),
+  mech: MechBaseSchema.optional(),
   createdAt: z.date().or(z.string()),
   updatedAt: z.date().or(z.string()),
   insights: z

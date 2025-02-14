@@ -21,6 +21,7 @@ export * from "./types";
 export * from "./api-schemas/account.responses";
 export * from "./api-schemas/workorder.responses";
 export * from "./api-schemas/filters";
+export * from "./api-schemas/mech.schema";
 export * from "./api-schemas/user";
 
 // Error handling
