@@ -2,9 +2,12 @@ import { PaginatedResponse, PaginatedResponseSchema } from "../api-schemas";
 import {
   CreateWorkorderRequest,
   CreateWorkorderSchema,
+  WorkorderDetailResponse,
+  WorkorderDetailResponseSchema,
   WorkorderFilter,
+  WorkorderListItemResponse,
+  WorkorderListItemResponseSchema,
   WorkorderResponse,
-  WorkorderResponseSchema,
 } from "../api-schemas/workorder.responses";
 
 import { QueryParams, SDKResponse } from "../types";
@@ -22,7 +25,7 @@ export class WorkorderClient  {
 
   async getAll(
     params: WorkorderQueryParams = {}
-  ): Promise<SDKResponse<PaginatedResponse<WorkorderResponse>>> {
+  ): Promise<SDKResponse<PaginatedResponse<WorkorderListItemResponse>>> {
     const { filters = [], page = 1, limit = 20, sort, order } = params;
 
     const queryParams = this.formatQueryParams({
@@ -34,20 +37,20 @@ export class WorkorderClient  {
     });
 
     const response = await this.httpClient.fetch<
-      SDKResponse<PaginatedResponse<WorkorderResponse>>
+      SDKResponse<PaginatedResponse<WorkorderListItemResponse>>
     >(`/worksheets${queryParams ? `?${queryParams}` : ""}`, "GET");
 
     const validatedData = validateRequest(
-      PaginatedResponseSchema(WorkorderResponseSchema),
+      PaginatedResponseSchema(WorkorderListItemResponseSchema),
       response.data
     );
 
     return { ...response, data: validatedData };
   }
 
-  async getOne(uuid: string): Promise<SDKResponse<WorkorderResponse>> {
-    const response = await this.httpClient.fetch<WorkorderResponse>(`/worksheets/${uuid}`, "GET");
-    const validatedData = validateRequest(WorkorderResponseSchema, response.data);
+  async getOne(uuid: string): Promise<SDKResponse<WorkorderDetailResponse>> {
+    const response = await this.httpClient.fetch<WorkorderDetailResponse>(`/worksheets/${uuid}`, "GET");
+    const validatedData = validateRequest(WorkorderDetailResponseSchema, response.data);
     return { ...response, data: validatedData}
   }
 
@@ -55,6 +58,7 @@ export class WorkorderClient  {
     data: CreateWorkorderRequest
   ): Promise<SDKResponse<WorkorderResponse>> {
     const validatedRequestData = validateRequest(CreateWorkorderSchema, data);
+    
     const response = await this.httpClient.fetch<WorkorderResponse>(
       "/worksheets",
       "POST",
@@ -62,7 +66,7 @@ export class WorkorderClient  {
     );
 
     const validatedResponseData = validateRequest(
-      WorkorderResponseSchema,
+      WorkorderDetailResponseSchema,
       response.data
     );
 

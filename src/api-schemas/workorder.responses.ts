@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-02-14T02:52:06.159Z
+ * Last updated: 2025-02-19T14:14:54.507Z
  * Update this file when API schema changes
  */
 
@@ -63,7 +63,7 @@ export type BatchDeleteWorkorderRequest = z.infer<
   typeof BatchDeleteWorkorderSchema
 >;
 
-export const WorkorderResponseSchema = z.object({
+export const WorkorderBaseResponseSchema = z.object({
   uuid: z.string().uuid(),
   worksheetId: z.number(),
   statusId: z.number(),
@@ -79,8 +79,23 @@ export const WorkorderResponseSchema = z.object({
     .optional()
 });
 
-export const WorkorderListResponseSchema = z.object({
-  list: z.array(WorkorderResponseSchema)
+// Schema for detailed single workorder response with complete entries
+export const WorkorderDetailResponseSchema = WorkorderBaseResponseSchema.extend({
+  // Complete entry data for detailed view
 });
 
-export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
+// Schema for list response with simplified entry previews
+export const WorkorderListItemResponseSchema = WorkorderBaseResponseSchema.extend({
+  // Simplified entry previews for list view
+  entries: z.array(z.object({ name: z.string(), content: z.string() })).optional()
+});
+
+export const WorkorderListResponseSchema = z.object({
+  list: z.array(WorkorderListItemResponseSchema)
+});
+
+export type WorkorderResponse = z.infer<typeof WorkorderDetailResponseSchema>;
+export type WorkorderDetailResponse = z.infer<typeof WorkorderDetailResponseSchema>;
+export type WorkorderListItemResponse = z.infer<typeof WorkorderListItemResponseSchema>;
+
+
