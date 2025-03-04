@@ -57,7 +57,9 @@ export class WorkorderClient  {
   async create(
     data: CreateWorkorderRequest
   ): Promise<SDKResponse<WorkorderResponse>> {
-    const validatedRequestData = validateRequest(CreateWorkorderSchema, data);
+
+    const t = { ...data, mech: { ...data.mech, type: { id:  data.mech.type.id } } }
+    const validatedRequestData = validateRequest(CreateWorkorderSchema, t);
     
     const response = await this.httpClient.fetch<WorkorderResponse>(
       "/worksheets",

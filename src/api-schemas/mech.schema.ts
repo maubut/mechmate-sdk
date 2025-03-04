@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/mech.schema.ts)
- * Last updated: 2025-02-14T02:52:06.155Z
+ * Last updated: 2025-03-02T17:14:17.803Z
  * Update this file when API schema changes
  */
 
@@ -35,17 +35,28 @@ export const MechMetricSchema = z.object({
     .nullable(),
 });
 
-const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/; 
+export const MechFieldValueSchema = z.object({
+  id: z.number().optional(),
+  equipmentId: z.number(),
+  value: z.string(),
+  purpose: z.string(),
+  name: z.string().optional(),
+});
+
+export const MechFieldValues = z.array(MechFieldValueSchema);
+
+// const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/; 
 
 export const MechBaseSchema = z.object({ 
-     uuid: z.string().uuid().optional(),
-    modelYear: z.number(),
-    vin: z.string()
-    .regex(vinRegex, 'Invalid VIN format - must be 17 characters excluding I, O, and Q')
+    uuid: z.string().uuid().optional(),
+    modelYear: z.number().optional(),
+    serialNumber: z.string()
     .toUpperCase()  // Normalize to uppercase
     .optional(),
-    metric: MechMetricSchema.optional(),
-    model: MechModelSchema,
+    metric: MechMetricSchema.optional().nullable(),
+    model: MechModelSchema.optional(),
+    fieldValues: MechFieldValues.optional(),
+    type: z.any(),
   customer: z.any()  })
 
 export type VehicleResponse = z.infer<typeof MechBaseSchema>;
