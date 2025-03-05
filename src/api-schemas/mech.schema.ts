@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/mech.schema.ts)
- * Last updated: 2025-03-02T17:14:17.803Z
+ * Last updated: 2025-03-05T01:23:04.580Z
  * Update this file when API schema changes
  */
 
@@ -37,7 +37,7 @@ export const MechMetricSchema = z.object({
 
 export const MechFieldValueSchema = z.object({
   id: z.number().optional(),
-  equipmentId: z.number(),
+  equipmentFieldId: z.number(),
   value: z.string(),
   purpose: z.string(),
   name: z.string().optional(),
