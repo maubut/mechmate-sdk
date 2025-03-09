@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/timelog.ts)
- * Last updated: 2025-02-12T13:43:34.427Z
+ * Last updated: 2025-03-09T23:56:48.788Z
  * Update this file when API schema changes
  */
 
@@ -11,11 +11,17 @@ import { BaseFilterSchema } from "./filters";
 
 export const TimeLogBaseSchema = z.object({
     id: z.number().optional(),
-    startTime: z.date(),
-    endTime: z.date().optional(),
+    startTime: z.string()
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/)
+    .transform((isoString) => new Date(isoString))
+    .optional(),
+endTime: z.string()
+  .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/)
+  .transform((isoString) => new Date(isoString))
+  .optional(),
     user: UserResponseSchema,
-    duration: z.number().min(0),
-    description: z.string().optional(), 
+    duration: z.number().min(0).optional(),
+    notes: z.string().optional(), 
 })
 
 export const WorkorderTimeLogSchema = TimeLogBaseSchema.extend({
@@ -26,8 +32,7 @@ export const WorkorderTimeLogSchema = TimeLogBaseSchema.extend({
 export type WorkorderTimeLogResponse = z.infer<typeof WorkorderTimeLogSchema>;
 
 export const CreateWorkorderTimeLogSchema = WorkorderTimeLogSchema.omit({
-    id: true,
-    duration: true
+    id: true
 })
 export type CreateWorkorderTimeLogRequest = z.infer<typeof CreateWorkorderTimeLogSchema>
 
