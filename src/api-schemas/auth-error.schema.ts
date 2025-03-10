@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/auth-error.schema.ts)
- * Last updated: 2025-02-13T01:00:48.955Z
+ * Last updated: 2025-03-10T20:28:06.695Z
  * Update this file when API schema changes
  */
 
@@ -16,7 +16,8 @@ export const AuthErrorCodeEnum = z.enum([
   'AUTH_NO_TOKEN',
   'AUTH_INVALID_CREDENTIALS',
   'AUTH_SESSION_EXPIRED',
-  'AUTH_INSUFFICIENT_PERMISSIONS'
+  'AUTH_INSUFFICIENT_PERMISSIONS',
+  'AUTH_LOGOUT_FAILED'
 ]);
 
 export type AuthErrorCode = z.infer<typeof AuthErrorCodeEnum>;
