@@ -8,6 +8,7 @@ import {
   WorkorderListItemResponse,
   WorkorderListItemResponseSchema,
   WorkorderResponse,
+  WorkorderResponseSchema,
 } from "../api-schemas/workorder.responses";
 
 import { QueryParams, SDKResponse } from "../types";
@@ -18,10 +19,8 @@ export interface WorkorderQueryParams extends QueryParams {
   filters?: WorkorderFilter[];
 }
 
-export class WorkorderClient  {
-
-  constructor(private httpClient: HTTPClient) {
-  }
+export class WorkorderClient {
+  constructor(private httpClient: HTTPClient) {}
 
   async getAll(
     params: WorkorderQueryParams = {}
@@ -49,18 +48,26 @@ export class WorkorderClient  {
   }
 
   async getOne(uuid: string): Promise<SDKResponse<WorkorderDetailResponse>> {
-    const response = await this.httpClient.fetch<WorkorderDetailResponse>(`/worksheets/${uuid}`, "GET");
-    const validatedData = validateRequest(WorkorderDetailResponseSchema, response.data);
-    return { ...response, data: validatedData}
+    const response = await this.httpClient.fetch<WorkorderDetailResponse>(
+      `/worksheets/${uuid}`,
+      "GET"
+    );
+    const validatedData = validateRequest(
+      WorkorderDetailResponseSchema,
+      response.data
+    );
+    return { ...response, data: validatedData };
   }
 
   async create(
     data: CreateWorkorderRequest
   ): Promise<SDKResponse<WorkorderResponse>> {
-
-    const t = { ...data, mech: { ...data.mech, type: { id:  data.mech.type.id } } }
+    const t = {
+      ...data,
+      mech: { ...data.mech, type: { id: data.mech.type.id } },
+    };
     const validatedRequestData = validateRequest(CreateWorkorderSchema, t);
-    
+
     const response = await this.httpClient.fetch<WorkorderResponse>(
       "/worksheets",
       "POST",
@@ -68,7 +75,7 @@ export class WorkorderClient  {
     );
 
     const validatedResponseData = validateRequest(
-      WorkorderDetailResponseSchema,
+      WorkorderResponseSchema,
       response.data
     );
 
