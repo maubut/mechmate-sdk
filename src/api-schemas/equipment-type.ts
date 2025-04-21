@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/equipment-type.ts)
- * Last updated: 2025-04-21T15:23:13.092Z
+ * Last updated: 2025-04-21T16:52:33.452Z
  * Update this file when API schema changes
  */
 
@@ -9,12 +9,7 @@ import {
   EquipmentFieldRequestSchema,
   EquipmentFieldResponseSchema
 } from './equipment-field';
-
-export const EquipmentTypeSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  accountId: z.number()
-});
+import { EquipmentTypeSchema } from './generated/zod';
 
 // Use PascalCase for schema names to match imported CalendarEventSchema pattern
 export const EquipmentTypeRequestSchema = EquipmentTypeSchema.extend({
