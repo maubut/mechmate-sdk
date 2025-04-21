@@ -30,12 +30,14 @@
   "author": "Mikhael Aubut",
   "license": "UNLICENSED",
   "dependencies": {
+    "@prisma/client": "^6.6.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
     "concurrently": "^9.1.0",
     "nodemon": "^3.1.7",
+    "prisma": "^6.6.0",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
