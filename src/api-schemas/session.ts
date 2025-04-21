@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/session.ts)
- * Last updated: 2025-02-02T13:24:32.992Z
+ * Last updated: 2025-04-21T15:23:13.103Z
  * Update this file when API schema changes
  */
 

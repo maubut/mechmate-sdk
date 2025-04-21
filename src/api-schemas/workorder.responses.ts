@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-02-19T14:14:54.507Z
+ * Last updated: 2025-04-21T15:23:13.106Z
  * Update this file when API schema changes
  */
 
@@ -9,6 +9,7 @@ import { CustomerBaseSchema } from './customer.responses';
 import { BaseFilterSchema } from './filters';
 import { QueryParams } from './common/query-params';
 import { MechBaseSchema } from './mech.schema';
+import { WorksheetSchema } from './generated/zod';
 
 export const WorkorderFilterableFields = {
   status: 'string',
@@ -38,7 +39,8 @@ export const CreateWorkorderSchema = z.object({
   statusId: z.number(),
   customer: WorkorderCustomerSchema,
   technician: z.object({ uuid: z.string().uuid() }).optional(),
-  mech: MechBaseSchema 
+  mech: MechBaseSchema,
+  dueDate: z.date().or(z.string()).optional()
 });
 
 export const UpdateWorkorderSchema = CreateWorkorderSchema.partial();
@@ -71,6 +73,7 @@ export const WorkorderBaseResponseSchema = z.object({
   mech: MechBaseSchema.optional(),
   createdAt: z.date().or(z.string()),
   updatedAt: z.date().or(z.string()),
+  dueAt: z.date().or(z.string()).optional(),
   insights: z
     .object({
       DONE: z.number(),
@@ -79,23 +82,37 @@ export const WorkorderBaseResponseSchema = z.object({
     .optional()
 });
 
-// Schema for detailed single workorder response with complete entries
-export const WorkorderDetailResponseSchema = WorkorderBaseResponseSchema.extend({
-  // Complete entry data for detailed view
+export const WorkorderResponseSchema = WorksheetSchema.omit({
+  id: true,
+  accountId: true
 });
 
+export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
+
+// Schema for detailed single workorder response with complete entries
+export const WorkorderDetailResponseSchema = WorkorderBaseResponseSchema.extend(
+  {
+    // Complete entry data for detailed view
+  }
+);
+
 // Schema for list response with simplified entry previews
-export const WorkorderListItemResponseSchema = WorkorderBaseResponseSchema.extend({
-  // Simplified entry previews for list view
-  entries: z.array(z.object({ name: z.string(), content: z.string() })).optional()
-});
+export const WorkorderListItemResponseSchema =
+  WorkorderBaseResponseSchema.extend({
+    // Simplified entry previews for list view
+    entries: z
+      .array(z.object({ name: z.string(), content: z.string() }))
+      .optional()
+  });
 
 export const WorkorderListResponseSchema = z.object({
   list: z.array(WorkorderListItemResponseSchema)
 });
 
-export type WorkorderResponse = z.infer<typeof WorkorderDetailResponseSchema>;
-export type WorkorderDetailResponse = z.infer<typeof WorkorderDetailResponseSchema>;
-export type WorkorderListItemResponse = z.infer<typeof WorkorderListItemResponseSchema>;
-
-
+// export type WorkorderResponse = z.infer<typeof WorkorderDetailResponseSchema>;
+export type WorkorderDetailResponse = z.infer<
+  typeof WorkorderDetailResponseSchema
+>;
+export type WorkorderListItemResponse = z.infer<
+  typeof WorkorderListItemResponseSchema
+>;

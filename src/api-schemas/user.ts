@@ -1,11 +1,11 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/user.ts)
- * Last updated: 2025-02-12T13:43:34.429Z
+ * Last updated: 2025-04-21T15:23:13.105Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
-
+import { UserSchema } from './generated/zod';
 export const PermissionFlagValues = {
   GUEST: 'GUEST',
   EMPLOYEE: 'EMPLOYEE',
@@ -15,7 +15,8 @@ export const PermissionFlagValues = {
   USER: 'USER'
 } as const;
 
-export type PermissionFlags = typeof PermissionFlagValues[keyof typeof PermissionFlagValues];
+export type PermissionFlags =
+  (typeof PermissionFlagValues)[keyof typeof PermissionFlagValues];
 
 const normalizeEmail = (email: string) => {
   // Simulate gmail_remove_dots and all_lowercase
@@ -27,10 +28,10 @@ const normalizeEmail = (email: string) => {
 };
 
 export const passwordSchema = z
-      .string()
-      .min(6)
-      .regex(/.*[!@#$%^&*]/, 'Password must contain a special character')
-      .regex(/.*\d/, 'Password must contain a number')
+  .string()
+  .min(6)
+  .regex(/.*[!@#$%^&*]/, 'Password must contain a special character')
+  .regex(/.*\d/, 'Password must contain a number');
 
 export const usernameSchema = z
   .string()
@@ -42,26 +43,19 @@ export const usernameSchema = z
     message: 'ERR_USERNAME_START_WITH_NUMBER'
   });
 
-  export const emailSchema = z
+export const emailSchema = z
   .string()
   .email({ message: 'ERR_INVALID_EMAIL' })
   .transform(normalizeEmail);
 
-// Reusable user fields schema
-const userFieldsSchema = z.object({
-  fullname: z.string().nullable(),
-  email: emailSchema.optional(),
-  username: usernameSchema.optional(),
-  permissionFlags: z.nativeEnum(PermissionFlagValues),
-  preferences: z.record(z.any()).nullable(),
-  picture: z.string().optional(),
-});
-
-export const UserBaseSchema = userFieldsSchema;
-
-export const UserResponseSchema = UserBaseSchema.extend({
-  uuid: z.string().uuid(),
-  verified: z.boolean()
+export const UserRequestSchema = UserSchema.pick({ uuid: true });
+export const UserResponseSchema = UserSchema.omit({
+  id: true,
+  accountId: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true,
+  password: true
 });
 
 export const CreateUserSchema = z.object({
@@ -69,7 +63,7 @@ export const CreateUserSchema = z.object({
   username: usernameSchema.optional(),
   permissionFlags: z.nativeEnum(PermissionFlagValues).optional(),
   password: passwordSchema,
-  email: emailSchema.optional() 
+  email: emailSchema.optional()
 });
 
 export const InviteUserSchema = z.object({
@@ -77,8 +71,7 @@ export const InviteUserSchema = z.object({
   username: usernameSchema.optional(),
   PermissionFlags: z.nativeEnum(PermissionFlagValues).optional(),
   email: emailSchema.optional()
-})
-
+});
 
 // Utility functions that can be useful in both frontend and backend
 export const isValidEmail = (email: string): boolean => {
