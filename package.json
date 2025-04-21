@@ -31,6 +31,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@prisma/client": "^6.6.0",
+    "buffer": "^6.0.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {

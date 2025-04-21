@@ -10,6 +10,8 @@ import { AuthTokens, RequestOptions, SDKConfig, SDKResponse } from "./types";
 import { HTTPClient } from "./client/http";
 z.setErrorMap(customErrorMap);
 
+import "./polyfills";
+
 // Entity schemas
 export * from "./schemas/signup.schema";
 export * from "./schemas/signin.schema";
@@ -32,7 +34,7 @@ export * as apiSchemas from "./api-schemas";
 
 export class MechmateSDK {
   private tokenManager: TokenManager;
-  private httpClient: HTTPClient;  // Add this
+  private httpClient: HTTPClient; // Add this
 
   public auth: AuthClient;
   public workorder: WorkorderClient;
@@ -49,7 +51,7 @@ export class MechmateSDK {
     this.auth = new AuthClient(this.httpClient, this.tokenManager);
     this.workorder = new WorkorderClient(this.httpClient);
     this.account = new AccountClient(this.httpClient);
-    this.user = new UserClient(this.httpClient); 
+    this.user = new UserClient(this.httpClient);
   }
 
   setTokens(tokens: AuthTokens) {
@@ -60,18 +62,18 @@ export class MechmateSDK {
     this.tokenManager.clearTokens();
   }
 
-async getTokenInfo() {
+  async getTokenInfo() {
     const accessToken = await this.tokenManager.getAccessToken();
     if (!accessToken) return null;
-  
+
     try {
-      const [, payload] = accessToken.split('.');
+      const [, payload] = accessToken.split(".");
       const decoded = JSON.parse(atob(payload));
-      const remainingMs = (decoded.exp * 1000) - Date.now();
-      
+      const remainingMs = decoded.exp * 1000 - Date.now();
+
       return {
         remainingSeconds: Math.max(0, Math.floor(remainingMs / 1000)),
-        expiresAt: new Date(decoded.exp * 1000)
+        expiresAt: new Date(decoded.exp * 1000),
       };
     } catch {
       return null;
