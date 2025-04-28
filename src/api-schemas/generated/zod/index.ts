@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/generated/zod/index.ts)
- * Last updated: 2025-04-21T17:48:00.328Z
+ * Last updated: 2025-04-28T00:27:37.578Z
  * Update this file when API schema changes
  */
 
@@ -82,6 +82,12 @@ export const isValidDecimalInput =
 /////////////////////////////////////////
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
+
+export const ApiKeyScalarFieldEnumSchema = z.enum(['id','uuid','key','accountId','name','description','createdAt','updatedAt','expiresAt','isActive','lastUsedAt','allowedOrigins','allowedIps']);
+
+export const ApiKeyUsageScalarFieldEnumSchema = z.enum(['id','apiKeyId','endpoint','statusCode','method','usedAt']);
+
+export const ApiKeyScopeAssignmentScalarFieldEnumSchema = z.enum(['id','apiKeyId','scope']);
 
 export const SequenceScalarFieldEnumSchema = z.enum(['id','name','currentValue','metadata','accountId','createdAt','updatedAt']);
 
@@ -169,9 +175,13 @@ export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const NullableJsonNullValueInputSchema = z.enum(['DbNull','JsonNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.DbNull : value);
 
-export const JsonNullValueFilterSchema = z.enum(['DbNull','JsonNull','AnyNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.JsonNull : value === 'AnyNull' ? Prisma.AnyNull : value);
-
 export const NullsOrderSchema = z.enum(['first','last']);
+
+export const ApiKeyOrderByRelevanceFieldEnumSchema = z.enum(['uuid','key','name','description','allowedOrigins','allowedIps']);
+
+export const ApiKeyUsageOrderByRelevanceFieldEnumSchema = z.enum(['endpoint','method']);
+
+export const JsonNullValueFilterSchema = z.enum(['DbNull','JsonNull','AnyNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.JsonNull : value === 'AnyNull' ? Prisma.AnyNull : value);
 
 export const TextFormattingOrderByRelevanceFieldEnumSchema = z.enum(['value']);
 
@@ -230,6 +240,10 @@ export const EquipmentTypeOrderByRelevanceFieldEnumSchema = z.enum(['name']);
 export const EquipmentFieldOrderByRelevanceFieldEnumSchema = z.enum(['name','defaultValue']);
 
 export const FieldValueOrderByRelevanceFieldEnumSchema = z.enum(['value']);
+
+export const ApiKeyScopeSchema = z.enum(['APPOINTMENT_CREATE','APPOINTMENT_READ','APPOINTMENT_UPDATE','APPOINTMENT_DELETE','CUSTOMER_CREATE','CUSTOMER_READ','WORKSHEET_READ','WORKSHEET_CREATE','INVOICE_READ','SDK_BASIC','SDK_FULL','WEBHOOK_RECEIVE']);
+
+export type ApiKeyScopeType = `${z.infer<typeof ApiKeyScopeSchema>}`
 
 export const BlockTypeSchema = z.enum(['PAGE','PARAGRAPH','HEADING_1','HEADING_2','HEADING_3','TODO','BULLETED_LIST','NUMBERED_LIST','TOGGLE','TABLE','QUOTE','DIVIDER','CALLOUT','CODE','IMAGE','FILE']);
 
@@ -306,6 +320,55 @@ export type InvoiceStatusType = `${z.infer<typeof InvoiceStatusSchema>}`
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////
+
+/////////////////////////////////////////
+// API KEY SCHEMA
+/////////////////////////////////////////
+
+export const ApiKeySchema = z.object({
+  id: z.number(),
+  uuid: z.string(),
+  key: z.string(),
+  accountId: z.number(),
+  name: z.string(),
+  description: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  expiresAt: z.date().nullable(),
+  isActive: z.boolean(),
+  lastUsedAt: z.date().nullable(),
+  allowedOrigins: z.string().nullable(),
+  allowedIps: z.string().nullable(),
+})
+
+export type ApiKey = z.infer<typeof ApiKeySchema>
+
+/////////////////////////////////////////
+// API KEY USAGE SCHEMA
+/////////////////////////////////////////
+
+export const ApiKeyUsageSchema = z.object({
+  id: z.number(),
+  apiKeyId: z.number(),
+  endpoint: z.string(),
+  statusCode: z.number(),
+  method: z.string(),
+  usedAt: z.date(),
+})
+
+export type ApiKeyUsage = z.infer<typeof ApiKeyUsageSchema>
+
+/////////////////////////////////////////
+// API KEY SCOPE ASSIGNMENT SCHEMA
+/////////////////////////////////////////
+
+export const ApiKeyScopeAssignmentSchema = z.object({
+  scope: ApiKeyScopeSchema,
+  id: z.number(),
+  apiKeyId: z.number(),
+})
+
+export type ApiKeyScopeAssignment = z.infer<typeof ApiKeyScopeAssignmentSchema>
 
 /////////////////////////////////////////
 // SEQUENCE SCHEMA

@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/equipment-type.ts)
- * Last updated: 2025-04-21T16:52:33.452Z
+ * Last updated: 2025-04-27T23:19:16.229Z
  * Update this file when API schema changes
  */
 
@@ -12,9 +12,16 @@ import {
 import { EquipmentTypeSchema } from './generated/zod';
 
 // Use PascalCase for schema names to match imported CalendarEventSchema pattern
-export const EquipmentTypeRequestSchema = EquipmentTypeSchema.extend({
-  fields: EquipmentFieldRequestSchema.array().optional()
-});
+export const EquipmentTypeRequestSchema = EquipmentTypeSchema.pick({
+  id: true,
+  accountId: true
+})
+  .partial({
+    id: true
+  })
+  .extend({
+    fields: EquipmentFieldRequestSchema.array().optional()
+  });
 
 export const EquipmentTypeResponseSchema = EquipmentTypeSchema.omit({
   accountId: true
@@ -26,10 +33,13 @@ export const EquipmentTypeListResponseSchema = z.array(
   EquipmentTypeResponseSchema
 );
 
-export const UpdateEquipmentTypeRequestSchema =
-  EquipmentTypeRequestSchema.required({
-    id: true
-  });
+export const UpdateEquipmentTypeRequestSchema = EquipmentTypeSchema.pick({
+  id: true,
+  name: true,
+  accountId: true
+}).extend({
+  fields: EquipmentFieldRequestSchema.array().optional()
+});
 
 export type UpdateEquipmentTypeRequest = z.infer<
   typeof UpdateEquipmentTypeRequestSchema

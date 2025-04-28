@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-04-21T15:23:13.106Z
+ * Last updated: 2025-04-28T00:42:58.570Z
  * Update this file when API schema changes
  */
 
@@ -21,8 +21,7 @@ const workorderFields = Object.keys(WorkorderFilterableFields) as Array<
 >;
 
 export const WorkorderFilterSchema = BaseFilterSchema.extend({
-  field: z.enum(workorderFields as [string, ...string[]]),
-  entityType: z.literal('workorder')
+  field: z.enum(workorderFields as [string, ...string[]])
 });
 
 export interface WorkorderQueryParams extends QueryParams {
@@ -84,7 +83,13 @@ export const WorkorderBaseResponseSchema = z.object({
 
 export const WorkorderResponseSchema = WorksheetSchema.omit({
   id: true,
-  accountId: true
+  accountId: true,
+  mechId: true,
+  userId: true
+}).extend({
+  createdAt: z.date().or(z.string()),
+  updatedAt: z.date().or(z.string()),
+  dueAt: z.date().or(z.string()).optional()
 });
 
 export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
