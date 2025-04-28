@@ -1,3 +1,6 @@
+// Import polyfills first before any other imports
+import "./polyfills";
+
 import { z } from "zod";
 import { AuthClient } from "./client/auth";
 import { WorkorderClient } from "./client/workorder";
@@ -9,8 +12,6 @@ import { TokenManager } from "./utils/token-manager";
 import { AuthTokens, RequestOptions, SDKConfig, SDKResponse } from "./types";
 import { HTTPClient } from "./client/http";
 z.setErrorMap(customErrorMap);
-
-import "./polyfills";
 
 // Entity schemas
 export * from "./schemas/signup.schema";
