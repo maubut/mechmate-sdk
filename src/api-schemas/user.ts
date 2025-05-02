@@ -1,11 +1,37 @@
 /**
- * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/user.ts)
- * Last updated: 2025-04-21T15:23:13.105Z
+ * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/user.ts)
+ * Last updated: 2025-05-01T13:25:39.003Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
-import { UserSchema } from './generated/zod';
+import { User } from './common/ts-interfaces';
+import { SchemaFromInterface } from './common/utils';
+
+const uint8ArraySchema = z.custom<Uint8Array>(
+  (val) => {
+    return val instanceof Uint8Array;
+  },
+  {
+    message: 'Must be a Uint8Array'
+  }
+);
+
+const UserSchema = z.object({
+  id: z.number(),
+  uuid: z.string(),
+  email: z.string().nullable(),
+  username: z.string(),
+  profileUrl: z.string().nullable(),
+  fullname: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date().nullable(),
+  verified: z.boolean(),
+  accountId: z.number(),
+  password: uint8ArraySchema.nullable()
+}) satisfies SchemaFromInterface<User>;
+
 export const PermissionFlagValues = {
   GUEST: 'GUEST',
   EMPLOYEE: 'EMPLOYEE',

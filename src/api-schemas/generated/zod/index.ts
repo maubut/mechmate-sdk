@@ -1,6 +1,6 @@
 /**
- * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/generated/zod/index.ts)
- * Last updated: 2025-04-28T00:27:37.578Z
+ * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/generated/zod/index.ts)
+ * Last updated: 2025-04-30T03:25:41.571Z
  * Update this file when API schema changes
  */
 
@@ -167,7 +167,7 @@ export const FeatureScalarFieldEnumSchema = z.enum(['id','type','attributes','us
 
 export const EquipmentTypeScalarFieldEnumSchema = z.enum(['id','name','accountId']);
 
-export const EquipmentFieldScalarFieldEnumSchema = z.enum(['id','name','purpose','required','source','defaultValue','options','config','equipmentTypeId']);
+export const EquipmentFieldScalarFieldEnumSchema = z.enum(['id','name','purpose','required','source','defaultValue','options','config','equipmentTypeId','deletedAt']);
 
 export const FieldValueScalarFieldEnumSchema = z.enum(['id','value','equipmentFieldId','mechId','timestamp']);
 
@@ -182,6 +182,8 @@ export const ApiKeyOrderByRelevanceFieldEnumSchema = z.enum(['uuid','key','name'
 export const ApiKeyUsageOrderByRelevanceFieldEnumSchema = z.enum(['endpoint','method']);
 
 export const JsonNullValueFilterSchema = z.enum(['DbNull','JsonNull','AnyNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.JsonNull : value === 'AnyNull' ? Prisma.AnyNull : value);
+
+export const QueryModeSchema = z.enum(['default','insensitive']);
 
 export const TextFormattingOrderByRelevanceFieldEnumSchema = z.enum(['value']);
 
@@ -1002,6 +1004,7 @@ export const EquipmentFieldSchema = z.object({
   options: JsonValueSchema.nullable(),
   config: JsonValueSchema.nullable(),
   equipmentTypeId: z.number(),
+  deletedAt: z.date().nullable(),
 })
 
 export type EquipmentField = z.infer<typeof EquipmentFieldSchema>

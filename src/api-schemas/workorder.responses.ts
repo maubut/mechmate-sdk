@@ -1,6 +1,6 @@
 /**
- * Schema duplicated from API (/home/maubut/projects/mechmate/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-04-28T00:42:58.570Z
+ * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/workorder.responses.ts)
+ * Last updated: 2025-05-01T13:25:39.004Z
  * Update this file when API schema changes
  */
 
@@ -9,7 +9,8 @@ import { CustomerBaseSchema } from './customer.responses';
 import { BaseFilterSchema } from './filters';
 import { QueryParams } from './common/query-params';
 import { MechBaseSchema } from './mech.schema';
-import { WorksheetSchema } from './generated/zod';
+import { Worksheet } from './common/ts-interfaces';
+import { SchemaFromInterface } from './common/utils';
 
 export const WorkorderFilterableFields = {
   status: 'string',
@@ -81,16 +82,25 @@ export const WorkorderBaseResponseSchema = z.object({
     .optional()
 });
 
+const WorksheetSchema = z.object({
+  id: z.number(),
+  uuid: z.string(),
+  worksheetId: z.number(),
+  mechId: z.number().nullable(),
+  accountId: z.number(),
+  statusId: z.number(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  dueAt: z.date().nullable(),
+  userId: z.number().nullable()
+}) satisfies SchemaFromInterface<Worksheet>;
+
 export const WorkorderResponseSchema = WorksheetSchema.omit({
   id: true,
   accountId: true,
   mechId: true,
   userId: true
-}).extend({
-  createdAt: z.date().or(z.string()),
-  updatedAt: z.date().or(z.string()),
-  dueAt: z.date().or(z.string()).optional()
-});
+}) satisfies SchemaFromInterface<Worksheet>;
 
 export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
 
