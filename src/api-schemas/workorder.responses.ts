@@ -1,16 +1,16 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-05-02T21:35:15.217Z
+ * Last updated: 2025-05-02T21:48:36.373Z
  * Update this file when API schema changes
  */
 
-import { z } from "zod";
-import { CustomerBaseSchema } from "./customer.responses";
-import { BaseFilterSchema } from "./filters";
-import { QueryParams } from "./common/query-params";
-import { MechBaseSchema } from "./mech.schema";
-import { Worksheet } from "./common/ts-interfaces";
-import { createFlexibleDateSchema, SchemaFromInterface } from "./common/utils";
+import { z } from 'zod';
+import { CustomerBaseSchema } from './customer.responses';
+import { BaseFilterSchema } from './filters';
+import { QueryParams } from './common/query-params';
+import { MechBaseSchema } from './mech.schema';
+import { Worksheet } from './common/ts-interfaces';
+import { SchemaFromInterface } from './common/utils';
 
 // Core schema
 const WorksheetSchema = z.object({
@@ -20,10 +20,10 @@ const WorksheetSchema = z.object({
   mechId: z.number().nullable(),
   accountId: z.number(),
   statusId: z.number(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  dueAt: z.date().nullable(),
-  userId: z.number().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  dueAt: z.coerce.date().nullable(),
+  userId: z.number().nullable()
 }) satisfies SchemaFromInterface<Worksheet>;
 
 // export const WorkorderBaseResponseSchema = z.object({
@@ -42,22 +42,19 @@ const WorksheetSchema = z.object({
 
 // Request schema
 export const CreateWorkorderRequestSchema = WorksheetSchema.omit({
-  id: true,
+  id: true
 });
 
 export const WorkorderResponseSchema = WorksheetSchema.omit({
   id: true,
   accountId: true,
   mechId: true,
-  userId: true,
-}).extend({
-  createdAt: createFlexibleDateSchema(),
-  updatedAt: createFlexibleDateSchema(),
+  userId: true
 });
 
 export const WorkorderFilterableFields = {
-  status: "string",
-  technician: "string",
+  status: 'string',
+  technician: 'string'
 } as const;
 
 const workorderFields = Object.keys(WorkorderFilterableFields) as Array<
@@ -65,7 +62,7 @@ const workorderFields = Object.keys(WorkorderFilterableFields) as Array<
 >;
 
 export const WorkorderFilterSchema = BaseFilterSchema.extend({
-  field: z.enum(workorderFields as [string, ...string[]]),
+  field: z.enum(workorderFields as [string, ...string[]])
 });
 
 export interface WorkorderQueryParams extends QueryParams {
@@ -75,7 +72,7 @@ export interface WorkorderQueryParams extends QueryParams {
 export type WorkorderFilter = z.infer<typeof WorkorderFilterSchema>;
 
 const WorkorderCustomerSchema = CustomerBaseSchema.extend({
-  uuid: z.string().uuid().optional(),
+  uuid: z.string().uuid().optional()
 });
 
 export const CreateWorkorderSchema = z.object({
@@ -83,21 +80,21 @@ export const CreateWorkorderSchema = z.object({
   customer: WorkorderCustomerSchema,
   technician: z.object({ uuid: z.string().uuid() }).optional(),
   mech: MechBaseSchema,
-  dueDate: z.date().or(z.string()).optional(),
+  dueDate: z.date().or(z.string()).optional()
 });
 
 export const UpdateWorkorderSchema = CreateWorkorderSchema.partial();
 
 export const DeleteWorkorderSchema = z.object({
   uuid: z.string().uuid({
-    message: "Invalid workorder UUID",
-  }),
+    message: 'Invalid workorder UUID'
+  })
 });
 
 export const BatchDeleteWorkorderSchema = z.object({
   uuids: z.array(z.string().uuid()).min(1, {
-    message: "At least one workorder UUID must be provided",
-  }),
+    message: 'At least one workorder UUID must be provided'
+  })
 });
 
 export type CreateWorkorderRequest = z.infer<typeof CreateWorkorderSchema>;
@@ -120,9 +117,9 @@ export const WorkorderBaseResponseSchema = z.object({
   insights: z
     .object({
       DONE: z.number(),
-      total: z.number(),
+      total: z.number()
     })
-    .optional(),
+    .optional()
 });
 
 // export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
@@ -140,11 +137,11 @@ export const WorkorderListItemResponseSchema =
     // Simplified entry previews for list view
     entries: z
       .array(z.object({ name: z.string(), content: z.string() }))
-      .optional(),
+      .optional()
   });
 
 export const WorkorderListResponseSchema = z.object({
-  list: z.array(WorkorderListItemResponseSchema),
+  list: z.array(WorkorderListItemResponseSchema)
 });
 
 // export type WorkorderResponse = z.infer<typeof WorkorderDetailResponseSchema>;
