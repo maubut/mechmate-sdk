@@ -1,20 +1,63 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-05-01T13:25:39.004Z
+ * Last updated: 2025-05-02T21:35:15.217Z
  * Update this file when API schema changes
  */
 
-import { z } from 'zod';
-import { CustomerBaseSchema } from './customer.responses';
-import { BaseFilterSchema } from './filters';
-import { QueryParams } from './common/query-params';
-import { MechBaseSchema } from './mech.schema';
-import { Worksheet } from './common/ts-interfaces';
-import { SchemaFromInterface } from './common/utils';
+import { z } from "zod";
+import { CustomerBaseSchema } from "./customer.responses";
+import { BaseFilterSchema } from "./filters";
+import { QueryParams } from "./common/query-params";
+import { MechBaseSchema } from "./mech.schema";
+import { Worksheet } from "./common/ts-interfaces";
+import { createFlexibleDateSchema, SchemaFromInterface } from "./common/utils";
+
+// Core schema
+const WorksheetSchema = z.object({
+  id: z.number(),
+  uuid: z.string().uuid(),
+  worksheetId: z.number(),
+  mechId: z.number().nullable(),
+  accountId: z.number(),
+  statusId: z.number(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  dueAt: z.date().nullable(),
+  userId: z.number().nullable(),
+}) satisfies SchemaFromInterface<Worksheet>;
+
+// export const WorkorderBaseResponseSchema = z.object({
+//   technician: z.any().optional(),
+//   mech: MechBaseSchema.optional(),
+//   createdAt: z.date().or(z.string()),
+//   updatedAt: z.date().or(z.string()),
+//   dueAt: z.date().or(z.string()).optional(),
+//   insights: z
+//     .object({
+//       DONE: z.number(),
+//       total: z.number()
+//     })
+//     .optional()
+// });
+
+// Request schema
+export const CreateWorkorderRequestSchema = WorksheetSchema.omit({
+  id: true,
+});
+
+export const WorkorderResponseSchema = WorksheetSchema.omit({
+  id: true,
+  accountId: true,
+  mechId: true,
+  userId: true,
+}).extend({
+  createdAt: createFlexibleDateSchema(),
+  updatedAt: createFlexibleDateSchema(),
+});
 
 export const WorkorderFilterableFields = {
-  status: 'string',
-  technician: 'string'
+  status: "string",
+  technician: "string",
 } as const;
 
 const workorderFields = Object.keys(WorkorderFilterableFields) as Array<
@@ -22,7 +65,7 @@ const workorderFields = Object.keys(WorkorderFilterableFields) as Array<
 >;
 
 export const WorkorderFilterSchema = BaseFilterSchema.extend({
-  field: z.enum(workorderFields as [string, ...string[]])
+  field: z.enum(workorderFields as [string, ...string[]]),
 });
 
 export interface WorkorderQueryParams extends QueryParams {
@@ -32,7 +75,7 @@ export interface WorkorderQueryParams extends QueryParams {
 export type WorkorderFilter = z.infer<typeof WorkorderFilterSchema>;
 
 const WorkorderCustomerSchema = CustomerBaseSchema.extend({
-  uuid: z.string().uuid().optional()
+  uuid: z.string().uuid().optional(),
 });
 
 export const CreateWorkorderSchema = z.object({
@@ -40,21 +83,21 @@ export const CreateWorkorderSchema = z.object({
   customer: WorkorderCustomerSchema,
   technician: z.object({ uuid: z.string().uuid() }).optional(),
   mech: MechBaseSchema,
-  dueDate: z.date().or(z.string()).optional()
+  dueDate: z.date().or(z.string()).optional(),
 });
 
 export const UpdateWorkorderSchema = CreateWorkorderSchema.partial();
 
 export const DeleteWorkorderSchema = z.object({
   uuid: z.string().uuid({
-    message: 'Invalid workorder UUID'
-  })
+    message: "Invalid workorder UUID",
+  }),
 });
 
 export const BatchDeleteWorkorderSchema = z.object({
   uuids: z.array(z.string().uuid()).min(1, {
-    message: 'At least one workorder UUID must be provided'
-  })
+    message: "At least one workorder UUID must be provided",
+  }),
 });
 
 export type CreateWorkorderRequest = z.infer<typeof CreateWorkorderSchema>;
@@ -77,32 +120,12 @@ export const WorkorderBaseResponseSchema = z.object({
   insights: z
     .object({
       DONE: z.number(),
-      total: z.number()
+      total: z.number(),
     })
-    .optional()
+    .optional(),
 });
 
-const WorksheetSchema = z.object({
-  id: z.number(),
-  uuid: z.string(),
-  worksheetId: z.number(),
-  mechId: z.number().nullable(),
-  accountId: z.number(),
-  statusId: z.number(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  dueAt: z.date().nullable(),
-  userId: z.number().nullable()
-}) satisfies SchemaFromInterface<Worksheet>;
-
-export const WorkorderResponseSchema = WorksheetSchema.omit({
-  id: true,
-  accountId: true,
-  mechId: true,
-  userId: true
-}) satisfies SchemaFromInterface<Worksheet>;
-
-export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
+// export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
 
 // Schema for detailed single workorder response with complete entries
 export const WorkorderDetailResponseSchema = WorkorderBaseResponseSchema.extend(
@@ -117,11 +140,11 @@ export const WorkorderListItemResponseSchema =
     // Simplified entry previews for list view
     entries: z
       .array(z.object({ name: z.string(), content: z.string() }))
-      .optional()
+      .optional(),
   });
 
 export const WorkorderListResponseSchema = z.object({
-  list: z.array(WorkorderListItemResponseSchema)
+  list: z.array(WorkorderListItemResponseSchema),
 });
 
 // export type WorkorderResponse = z.infer<typeof WorkorderDetailResponseSchema>;
@@ -131,3 +154,10 @@ export type WorkorderDetailResponse = z.infer<
 export type WorkorderListItemResponse = z.infer<
   typeof WorkorderListItemResponseSchema
 >;
+
+// export type CreateEquipmentTypeRequest = z.infer<typeof CreateEquipmentTypeRequestSchema>;
+// export type ReadEquipmentTypeRequest = z.infer<typeof ReadEquipmentTypeRequestSchema>;
+// export type UpdateEquipmentTypeRequest = z.infer<typeof UpdateEquipmentTypeRequestSchema>;
+// export type DeleteEquipmentTypeRequest = z.infer<typeof DeleteEquipmentTypeRequestSchema>;
+export type WorkorderResponse = z.infer<typeof WorkorderResponseSchema>;
+// export type WorkorderResponseListResponse = z.infer<typeof WorkorderListResponseSchema>;
