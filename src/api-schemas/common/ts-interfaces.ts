@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/common/ts-interfaces.ts)
- * Last updated: 2025-05-01T13:25:38.993Z
+ * Last updated: 2025-05-05T19:38:30.937Z
  * Update this file when API schema changes
  */
 
@@ -256,6 +256,7 @@ export interface Mech {
   metric?: MechMetric | null;
   model?: Model | null;
   worksheets?: Worksheet[];
+  entries?: Entry[];
   MetricsOnInvoices?: MetricsOnInvoices[];
   type?: EquipmentType;
   account?: Account;
@@ -422,6 +423,7 @@ export interface Entry {
   updatedAt: Date;
   priceId: number | null;
   invoiceId: number | null;
+  mechId: number | null;
   type: EntryType;
   name: string | null;
   entryProductService?: EntryProductService | null;
@@ -430,6 +432,7 @@ export interface Entry {
   status?: EntryStatus | null;
   worksheets?: EntriesOnWorksheet | null;
   timelogs?: TimeLog[];
+  mech?: Mech | null;
 }
 
 export interface EntryProductService {

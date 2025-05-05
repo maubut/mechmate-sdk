@@ -1,11 +1,15 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/workorder.responses.ts)
- * Last updated: 2025-05-02T21:48:36.373Z
+ * Last updated: 2025-05-05T20:12:01.388Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
-import { CustomerBaseSchema } from './customer.responses';
+import {
+  CreateCustomerRequestSchema,
+  CustomerResponseSchema,
+  UpdateCustomerRequestSchema
+} from './customer.responses';
 import { BaseFilterSchema } from './filters';
 import { QueryParams } from './common/query-params';
 import { MechBaseSchema } from './mech.schema';
@@ -71,13 +75,9 @@ export interface WorkorderQueryParams extends QueryParams {
 
 export type WorkorderFilter = z.infer<typeof WorkorderFilterSchema>;
 
-const WorkorderCustomerSchema = CustomerBaseSchema.extend({
-  uuid: z.string().uuid().optional()
-});
-
 export const CreateWorkorderSchema = z.object({
   statusId: z.number(),
-  customer: WorkorderCustomerSchema,
+  customer: z.union([CreateCustomerRequestSchema, UpdateCustomerRequestSchema]),
   technician: z.object({ uuid: z.string().uuid() }).optional(),
   mech: MechBaseSchema,
   dueDate: z.date().or(z.string()).optional()

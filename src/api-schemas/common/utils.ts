@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/common/utils.ts)
- * Last updated: 2025-05-02T21:35:15.210Z
+ * Last updated: 2025-05-05T19:38:30.939Z
  * Update this file when API schema changes
  */
 
@@ -19,12 +19,4 @@ export function createSchemaFromInterface<T>(
     z.ZodTypeAny,
     T
   >;
-}
-
-export function createFlexibleDateSchema() {
-  return z.preprocess((val) => {
-    if (val instanceof Date) return val;
-    if (typeof val === 'string') return new Date(val);
-    return val;
-  }, z.date());
 }
