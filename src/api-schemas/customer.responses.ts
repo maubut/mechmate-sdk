@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/customer.responses.ts)
- * Last updated: 2025-05-05T20:12:01.376Z
+ * Last updated: 2025-05-30T17:09:30.648Z
  * Update this file when API schema changes
  */
 
@@ -49,10 +49,15 @@ export const UpdateCustomerRequestSchema = CustomerSchema.omit({
   updatedAt: true
 });
 
+export const UpsertCustomerRequestSchema = CreateCustomerRequestSchema.extend({
+  uuid: z.string().uuid().optional()
+});
+
 // Response schema
 
 // Type exports
 export type CreateCustomerRequest = z.infer<typeof CreateCustomerRequestSchema>;
+export type UpsertCustomerRequest = z.infer<typeof UpsertCustomerRequestSchema>;
 export type UpdateCustomerRequest = z.infer<typeof UpdateCustomerRequestSchema>;
 
 export const CustomerVehiclesSchema = z.array(MechBaseSchema);

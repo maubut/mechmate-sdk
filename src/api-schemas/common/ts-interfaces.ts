@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/common/ts-interfaces.ts)
- * Last updated: 2025-05-05T19:38:30.937Z
+ * Last updated: 2025-05-30T14:50:29.963Z
  * Update this file when API schema changes
  */
 
@@ -121,7 +121,7 @@ export interface User {
   uuid: string;
   email: string | null;
   username: string;
-  password: Uint8Array | null;
+  password: string | null;
   profileUrl: string | null;
   fullname: string | null;
   preferences: JsonValue | null;

@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/user.ts)
- * Last updated: 2025-05-01T13:25:39.003Z
+ * Last updated: 2025-05-30T14:50:30.001Z
  * Update this file when API schema changes
  */
 
@@ -29,7 +29,7 @@ const UserSchema = z.object({
   deletedAt: z.date().nullable(),
   verified: z.boolean(),
   accountId: z.number(),
-  password: uint8ArraySchema.nullable()
+  password: z.string().nullable()
 }) satisfies SchemaFromInterface<User>;
 
 export const PermissionFlagValues = {

@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/events.ts)
- * Last updated: 2025-05-05T19:38:30.943Z
+ * Last updated: 2025-05-30T14:50:29.976Z
  * Update this file when API schema changes
  */
 
@@ -23,11 +23,19 @@ const CalendarEventSchema = z.object({
   reminderDate: z.coerce.date().nullable()
 }) satisfies SchemaFromInterface<CalendarEvent>;
 
+const EventEntitySchema = z.object({
+  uuid: z.string(),
+  type: z.enum(['CUSTOMER', 'MECH'])
+});
+
 // Use PascalCase for schema names to match imported CalendarEventSchema pattern
-export const EventRequestSchema = CalendarEventSchema.pick({ id: true });
+export const EventRequestSchema = CalendarEventSchema.pick({ uuid: true });
 export const EventResponseSchema = CalendarEventSchema.omit({
   id: true,
-  accountId: true
+  accountId: true,
+  entityId: true
+}).extend({
+  entity: EventEntitySchema.optional()
 });
 
 export const EventListResponseSchema = z.array(EventResponseSchema);
@@ -35,3 +43,28 @@ export const EventListResponseSchema = z.array(EventResponseSchema);
 export type EventResponse = z.infer<typeof EventResponseSchema>;
 export type EventListResponse = z.infer<typeof EventListResponseSchema>;
 export type SelectEventRequest = z.infer<typeof EventRequestSchema>;
+
+// Request schema
+export const CreateEventRequestSchema = CalendarEventSchema.omit({
+  id: true,
+  uuid: true,
+  entityId: true,
+  reminderDate: true,
+  createdById: true
+}).extend({
+  entity: EventEntitySchema.optional()
+});
+
+export const UpdateEventRequestSchema = CalendarEventSchema.omit({
+  id: true,
+  uuid: true,
+  accountId: true,
+  createdById: true,
+  entityId: true,
+  reminderDate: true
+}).extend({
+  entity: EventEntitySchema.optional()
+});
+
+export type CreateEventRequest = z.infer<typeof CreateEventRequestSchema>;
+export type UpdateEventRequest = z.infer<typeof UpdateEventRequestSchema>;
