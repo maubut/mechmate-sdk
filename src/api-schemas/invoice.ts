@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/invoice.ts)
- * Last updated: 2025-05-05T19:38:30.946Z
+ * Last updated: 2025-06-06T01:08:36.924Z
  * Update this file when API schema changes
  */
 
@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { QueryParams } from './common/query-params';
 import { BaseFilterSchema } from './filters';
 import { CustomerSchema } from './customer.responses';
-import { AddressBaseSchema } from './address';
+import { AddressResponseSchema } from './address';
 
 export const InvoiceFilterScehma = BaseFilterSchema.extend({});
 
@@ -22,7 +22,7 @@ const InvoiceCustomerSchema = CustomerSchema.extend({
   uuid: z.string().uuid().optional()
 });
 
-const InvoiceAddressSchema = AddressBaseSchema;
+const InvoiceAddressSchema = AddressResponseSchema;
 
 export const InvoiceResponseSchema = z.object({
   uuid: z.string().uuid(),

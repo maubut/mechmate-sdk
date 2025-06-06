@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/customer.responses.ts)
- * Last updated: 2025-05-30T17:09:30.648Z
+ * Last updated: 2025-06-06T01:08:36.914Z
  * Update this file when API schema changes
  */
 
@@ -10,6 +10,7 @@ import { BaseFilterSchema } from './filters';
 import { QueryParams } from './common/query-params';
 import { SchemaFromInterface } from './common/utils';
 import { Customer } from './common/ts-interfaces';
+import { AddressResponseSchema } from './address';
 
 const mobileRegex = /^(\+?[1-9]\d{0,3}[- ]?)?\d{3}[- ]?\d{3}[- ]?\d{4}$/;
 
@@ -25,12 +26,13 @@ export const CustomerSchema = z.object({
   fullname: z.string()
 }) satisfies SchemaFromInterface<Customer>;
 
-// Request schema
+// Response schema
 export const CustomerResponseSchema = CustomerSchema.omit({
   id: true,
   accountId: true
 }).extend({
-  uuid: z.string().uuid().optional()
+  uuid: z.string().uuid().optional(),
+  addresses: z.array(AddressResponseSchema).optional()
 });
 
 // Request schema
