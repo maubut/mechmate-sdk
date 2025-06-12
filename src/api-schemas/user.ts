@@ -1,11 +1,11 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/user.ts)
- * Last updated: 2025-05-30T14:50:30.001Z
+ * Last updated: 2025-06-07T03:45:32.949Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
-import { User } from './common/ts-interfaces';
+import { User, PermissionFlags } from './common/ts-interfaces';
 import { SchemaFromInterface } from './common/utils';
 
 const uint8ArraySchema = z.custom<Uint8Array>(
@@ -17,6 +17,19 @@ const uint8ArraySchema = z.custom<Uint8Array>(
   }
 );
 
+const permissionFlagsRecord: Record<PermissionFlags, PermissionFlags> = {
+  GUEST: 'GUEST',
+  EMPLOYEE: 'EMPLOYEE',
+  ADMINISTRATOR: 'ADMINISTRATOR',
+  FULL_ADMIN: 'FULL_ADMIN',
+  CLIENT: 'CLIENT',
+  USER: 'USER'
+};
+
+const permissionFlagsValues = Object.values(
+  permissionFlagsRecord
+) as readonly PermissionFlags[];
+
 const UserSchema = z.object({
   id: z.number(),
   uuid: z.string(),
@@ -27,22 +40,14 @@ const UserSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   deletedAt: z.date().nullable(),
+  permissionFlags: z.enum(
+    permissionFlagsValues as [PermissionFlags, ...PermissionFlags[]]
+  ),
+  preferences: z.any().nullable(),
   verified: z.boolean(),
   accountId: z.number(),
   password: z.string().nullable()
 }) satisfies SchemaFromInterface<User>;
-
-export const PermissionFlagValues = {
-  GUEST: 'GUEST',
-  EMPLOYEE: 'EMPLOYEE',
-  ADMINISTRATOR: 'ADMINISTRATOR',
-  FULL_ADMIN: 'FULL_ADMIN',
-  CLIENT: 'CLIENT',
-  USER: 'USER'
-} as const;
-
-export type PermissionFlags =
-  (typeof PermissionFlagValues)[keyof typeof PermissionFlagValues];
 
 const normalizeEmail = (email: string) => {
   // Simulate gmail_remove_dots and all_lowercase
@@ -87,7 +92,9 @@ export const UserResponseSchema = UserSchema.omit({
 export const CreateUserSchema = z.object({
   fullname: z.string().min(1),
   username: usernameSchema.optional(),
-  permissionFlags: z.nativeEnum(PermissionFlagValues).optional(),
+  permissionFlags: z
+    .enum(permissionFlagsValues as [PermissionFlags, ...PermissionFlags[]])
+    .optional(),
   password: passwordSchema,
   email: emailSchema.optional()
 });
@@ -95,7 +102,9 @@ export const CreateUserSchema = z.object({
 export const InviteUserSchema = z.object({
   fullname: z.string().min(1),
   username: usernameSchema.optional(),
-  PermissionFlags: z.nativeEnum(PermissionFlagValues).optional(),
+  permissionFlags: z
+    .enum(permissionFlagsValues as [PermissionFlags, ...PermissionFlags[]])
+    .optional(),
   email: emailSchema.optional()
 });
 

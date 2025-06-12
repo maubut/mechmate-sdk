@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/invoice.ts)
- * Last updated: 2025-06-06T01:08:36.924Z
+ * Last updated: 2025-06-12T18:04:47.773Z
  * Update this file when API schema changes
  */
 
