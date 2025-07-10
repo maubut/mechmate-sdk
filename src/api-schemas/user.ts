@@ -1,21 +1,12 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/user.ts)
- * Last updated: 2025-06-07T03:45:32.949Z
+ * Last updated: 2025-07-10T01:37:07.982Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
 import { User, PermissionFlags } from './common/ts-interfaces';
 import { SchemaFromInterface } from './common/utils';
-
-const uint8ArraySchema = z.custom<Uint8Array>(
-  (val) => {
-    return val instanceof Uint8Array;
-  },
-  {
-    message: 'Must be a Uint8Array'
-  }
-);
 
 const permissionFlagsRecord: Record<PermissionFlags, PermissionFlags> = {
   GUEST: 'GUEST',
@@ -30,7 +21,7 @@ const permissionFlagsValues = Object.values(
   permissionFlagsRecord
 ) as readonly PermissionFlags[];
 
-const UserSchema = z.object({
+export const UserSchema = z.object({
   id: z.number(),
   uuid: z.string(),
   email: z.string().nullable(),

@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/account.responses.ts)
- * Last updated: 2025-07-04T20:38:04.029Z
+ * Last updated: 2025-07-10T01:37:07.966Z
  * Update this file when API schema changes
  */
 
@@ -61,8 +61,7 @@ export const DeleteAccountPreferencesSchema = z.object({
 // Response schemas
 export const AccountPreferencesResponseSchema = z.object({
   preferences: AccountPreferencesBaseSchema,
-  packages: z.array(PackageBaseSchema),
-  currentPackage: PackageBaseSchema.nullable()
+  packages: z.array(PackageBaseSchema)
 });
 
 // Types
