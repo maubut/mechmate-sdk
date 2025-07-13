@@ -1,11 +1,11 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/account.responses.ts)
- * Last updated: 2025-07-11T02:06:00.503Z
+ * Last updated: 2025-07-13T21:06:36.620Z
  * Update this file when API schema changes
  */
 
 import { z } from 'zod';
-import { PriceBaseSchema } from './price.responses';
+import { PriceBaseSchema } from './price';
 
 export const AccountPreferencesBaseSchema = z.object({
   invoiceStartNumber: z.number(),

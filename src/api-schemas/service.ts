@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/service.ts)
- * Last updated: 2025-07-11T02:06:00.517Z
+ * Last updated: 2025-07-13T21:06:36.633Z
  * Update this file when API schema changes
  */
 
@@ -16,7 +16,8 @@ export const ServiceBaseSchema = z.object({
   parentId: z.number().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
-  accountId: z.number()
+  accountId: z.number(),
+  price: z.any().optional()
 }) satisfies SchemaFromInterface<Service>;
 
 export const ServiceSchema = z.object({
@@ -45,9 +46,13 @@ export const UpdateServiceRequestSchema = ServiceBaseSchema.omit({
   parentId: true
 });
 
+export const DeleteServiceRequestSchema = ServiceBaseSchema.pick({
+  id: true
+});
+
 export type CreateServiceRequest = z.infer<typeof CreateServiceRequestSchema>;
 // ReadServiceRequest
 export type UpdateServiceRequest = z.infer<typeof UpdateServiceRequestSchema>;
-// DeleteServiceRequest
+export type DeleteServiceRequest = z.infer<typeof DeleteServiceRequestSchema>;
 
 export type ServiceResponse = z.infer<typeof ServiceResponseSchema>;
