@@ -1,6 +1,6 @@
 /**
  * Schema duplicated from API (/home/maubut/projects/mechmate/backend/mechmate-api/src/api-schemas/price.ts)
- * Last updated: 2025-07-13T21:06:36.632Z
+ * Last updated: 2025-07-19T01:49:39.261Z
  * Update this file when API schema changes
  */
 
@@ -17,7 +17,7 @@ export const RateTypeEnum = z.enum(['STANDARD']);
 
 export const PriceBaseSchema = z.object({
   rateType: z.enum(FieldPriceRateEnum),
-  valuePerUnit: z
+  valuePerUnit: z.coerce
     .string()
     .regex(/^\d+(\.\d+)?$/, 'Must be a valid decimal number')
 }) satisfies SchemaFromInterface<Price>;
